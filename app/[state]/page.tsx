@@ -1,10 +1,16 @@
-export default function StatePage() {
+type Props = {
+  params: Promise<{
+    state: string;
+  }>;
+};
+
+export default async function StatePage({ params }: Props) {
+  const { state } = await params;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          State
-        </div>
+    <div className="flex">
+      <main className="flex">
+        <div className="flex">State: {state}</div>
       </main>
     </div>
   );
