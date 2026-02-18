@@ -1,0 +1,95 @@
+import { NextResponse } from "next/server";
+import { connectDB } from "@/lib/mongodb";
+import District from "@/lib/models/district";
+
+export async function GET(req) {
+  try {
+    await connectDB();
+
+    const { searchParams } = new URL(req.url);
+    const state_slug = searchParams.get("state_slug");
+    const district_slug = searchParams.get("district_slug");
+
+    // Case 1: Both state_slug AND district_slug provided → return single district details
+    if (state_slug && district_slug) {
+      const district = await District.findOne({
+        state_slug,
+        district_slug,
+      }).lean();
+
+      if (!district) {
+        return NextResponse.json(
+          { error: "District not found" },
+          { status: 404 },
+        );
+      }
+
+      return NextResponse.json(district, { status: 200 });
+    }
+
+    // Case 2: Only state_slug provided → return all districts for that state
+    if (state_slug) {
+      const districts = await District.find({ state_slug })
+        .sort({ district: 1 })
+        .select(
+          "district district_slug total_population total_tehsils state_slug",
+        )
+        .lean();
+
+      return NextResponse.json({ allDistricts: districts }, { status: 200 });
+    }
+
+    // No params → error (require at least state_slug)
+    return NextResponse.json(
+      { error: "state_slug parameter is required" },
+      { status: 400 },
+    );
+  } catch (error) {
+    console.error("GET /districts error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch districts", details: error.message },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(req) {
+  try {
+    await connectDB();
+
+    const body = await req.json();
+
+    if (!body || Object.keys(body).length === 0) {
+      return NextResponse.json(
+        { error: "Request body is empty or invalid" },
+        { status: 400 },
+      );
+    }
+
+    const district = await District.create(body);
+
+    return NextResponse.json(district, { status: 201 });
+  } catch (error) {
+    console.error("POST /districts error:", error);
+
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((e) => e.message);
+      return NextResponse.json(
+        { error: "Validation failed", details: messages },
+        { status: 422 },
+      );
+    }
+
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { error: "Duplicate entry", details: error.keyValue },
+        { status: 409 },
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Failed to create district", details: error.message },
+      { status: 500 },
+    );
+  }
+}
