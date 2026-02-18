@@ -1,5 +1,6 @@
 import { getDistricts, getTehsils } from "@/utils/common";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 type Props = {
   params: Promise<{
@@ -7,6 +8,23 @@ type Props = {
     district: string;
   }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { state, district } = await params;
+  const districts = await getDistricts({
+    state_slug: state,
+    district_slug: district,
+  });
+
+  return {
+    title: `${districts?.district} District, ${districts?.state} – Tehsils, Villages List, Population and Census`,
+    description: `${districts?.district} is a district in ${districts?.state}. This page provides district-level statistics including total tehsils, villages, population data and literacy rates.`,
+    openGraph: {
+      title: `${districts?.district} District, ${districts?.state} – Tehsils, Villages List, Population and Census`,
+      description: `${districts?.district} is a district in ${districts?.state}. Explore tehsils, villages, population and census data.`,
+    },
+  };
+}
 
 export default async function DistrictPage({ params }: Props) {
   const { state, district } = await params;

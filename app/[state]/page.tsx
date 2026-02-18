@@ -1,11 +1,26 @@
 import { getDistricts, getStates } from "@/utils/common";
 import Link from "next/link";
+import type { Metadata } from "next";
 
 type Props = {
   params: Promise<{
     state: string;
   }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { state } = await params;
+  const stateData = await getStates({ state_slug: state });
+
+  return {
+    title: `${stateData?.state} - Districts, Tehsils, Villages, Population and Census`,
+    description: `${stateData?.state} is a state in India. This page provides state-level statistics including total districts, tehsils, villages, population data and literacy rates.`,
+    openGraph: {
+      title: `${stateData?.state} - Districts, Tehsils, Villages, Population and Census`,
+      description: `${stateData?.state} is a state in India. Explore districts, tehsils, villages, population and census data.`,
+    },
+  };
+}
 
 export default async function StatePage({ params }: Props) {
   const { state } = await params;
