@@ -1,5 +1,3 @@
-import { stat } from "fs";
-
 export async function getStates(params = {}) {
   try {
     const url = new URL(`${process.env.HOST}/api/states`);
