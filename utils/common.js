@@ -1,4 +1,4 @@
-import { console } from "inspector";
+import { stat } from "fs";
 
 export async function getStates(params = {}) {
   try {
@@ -15,9 +15,14 @@ export async function getStates(params = {}) {
       cache: "no-store", // always fresh data, use "force-cache" if data rarely changes
     });
 
-    if (!res.ok) throw new Error(`Failed to fetch states: ${res.status}`);
+    if (!res.ok)
+      return {
+        error: `Failed to fetch states: ${res.status}`,
+        status: res.status,
+      };
 
     const data = await res.json();
+
     if (data?.allStates) {
       return data.allStates;
     } else {
@@ -44,7 +49,11 @@ export async function getDistricts(params = {}) {
       cache: "no-store", // always fresh data, use "force-cache" if data rarely changes
     });
 
-    if (!res.ok) throw new Error(`Failed to fetch districts: ${res.status}`);
+    if (!res.ok)
+      return {
+        error: `Failed to fetch states: ${res.status}`,
+        status: res.status,
+      };
 
     const data = await res.json();
 
@@ -76,7 +85,11 @@ export async function getTehsils(params = {}) {
       cache: "no-store", // always fresh data, use "force-cache" if data rarely changes
     });
 
-    if (!res.ok) throw new Error(`Failed to fetch tehsils: ${res.status}`);
+    if (!res.ok)
+      return {
+        error: `Failed to fetch states: ${res.status}`,
+        status: res.status,
+      };
 
     const data = await res.json();
 
@@ -89,6 +102,42 @@ export async function getTehsils(params = {}) {
     }
   } catch (error) {
     console.error("getTehsils error:", error);
+    return [];
+  }
+}
+
+export async function getVillages(params = {}) {
+  try {
+    const url = new URL(`${process.env.HOST}/api/village`);
+
+    // Add query parameters if provided
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, value);
+      }
+    });
+
+    const res = await fetch(url.toString(), {
+      cache: "no-store", // always fresh data, use "force-cache" if data rarely changes
+    });
+
+    if (!res.ok)
+      return {
+        error: `Failed to fetch states: ${res.status}`,
+        status: res.status,
+      };
+
+    const data = await res.json();
+
+    // If allVillages array exists, return it (multiple villages)
+    // Otherwise return the single village object
+    if (data?.allVillages) {
+      return data.allVillages;
+    } else {
+      return data;
+    }
+  } catch (error) {
+    console.error("getVillages error:", error);
     return [];
   }
 }

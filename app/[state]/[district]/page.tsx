@@ -1,6 +1,7 @@
 import { getDistricts, getTehsils } from "@/utils/common";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{
@@ -40,9 +41,14 @@ export default async function DistrictPage({ params }: Props) {
     district_slug: district,
   });
 
+  // Show 404 if district not found
+  if (!districts || districts?.status === 404) {
+    notFound();
+  }
+
   return (
     <main className="flex w-full md:max-w-275 m-auto p-4 flex-wrap">
-      <div className="flex w-full text-sm gap-1 mb-4">
+      <div className="flex w-full text-sm gap-1 mb-4 capitalize">
         <Link href="/" className="text-indigo-600">
           Home
         </Link>{" "}

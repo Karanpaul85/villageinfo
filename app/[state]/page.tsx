@@ -1,6 +1,7 @@
 import { getDistricts, getStates } from "@/utils/common";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{
@@ -11,6 +12,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state } = await params;
   const stateData = await getStates({ state_slug: state });
+  // console.log("State data for metadata generation:", stateData);
 
   return {
     title: `${stateData?.state} - Districts, Tehsils, Villages, Population and Census`,
@@ -27,9 +29,14 @@ export default async function StatePage({ params }: Props) {
   const stateData = await getStates({ state_slug: state });
   const districts = await getDistricts({ state_slug: state });
 
+  // Show 404 if state not found
+  if (!stateData || stateData?.status === 404) {
+    notFound();
+  }
+
   return (
     <main className="flex w-full md:max-w-275 m-auto p-4 flex-wrap">
-      <div className="flex w-full text-sm gap-1 mb-4">
+      <div className="flex w-full text-sm gap-1 mb-4 capitalize">
         <Link href="/" className="text-indigo-600">
           Home
         </Link>{" "}
