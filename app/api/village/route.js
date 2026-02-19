@@ -82,7 +82,27 @@ export async function POST(req) {
       );
     }
 
-    const village = await Village.create(body);
+    // ✅ Convert empty values to null
+    Object.keys(body).forEach((key) => {
+      const value = body[key];
+
+      // Only set to null if it's ACTUALLY empty, not if it's a valid number
+      if (value === null || value === undefined || value === "") {
+        body[key] = null;
+      }
+      // Don't touch numbers, even if they're 0
+    });
+
+    const village = await Village.findOneAndUpdate(
+      { village_id: body.village_id },
+      body, // Direct update without $set works when upsert is true
+      {
+        new: true, // Return updated doc
+        upsert: true, // Create if not exists
+        runValidators: true, // Validate
+        overwrite: false, // Don't replace entire doc, just update fields
+      },
+    );
 
     return NextResponse.json(village, { status: 201 });
   } catch (error) {
