@@ -10,7 +10,7 @@ export async function getStates(params = {}) {
     });
 
     const res = await fetch(url.toString(), {
-      cache: "no-store", // always fresh data, use "force-cache" if data rarely changes
+      next: { revalidate: 86400, tags: ["states"] }, // revalidate every 24 hours
     });
 
     if (!res.ok)
@@ -44,7 +44,7 @@ export async function getDistricts(params = {}) {
     });
 
     const res = await fetch(url.toString(), {
-      cache: "no-store", // always fresh data, use "force-cache" if data rarely changes
+      next: { revalidate: 86400, tags: ["districts"] }, // revalidate every 24 hours
     });
 
     if (!res.ok)
@@ -80,7 +80,7 @@ export async function getTehsils(params = {}) {
     });
 
     const res = await fetch(url.toString(), {
-      cache: "no-store", // always fresh data, use "force-cache" if data rarely changes
+      next: { revalidate: 86400, tags: ["tehsils"] }, // revalidate every 24 hours
     });
 
     if (!res.ok)
@@ -116,7 +116,7 @@ export async function getVillages(params = {}) {
     });
 
     const res = await fetch(url.toString(), {
-      cache: "no-store", // always fresh data, use "force-cache" if data rarely changes
+      next: { revalidate: 86400, tags: ["villages"] }, // revalidate every 24 hours
     });
 
     if (!res.ok)
