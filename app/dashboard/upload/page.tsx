@@ -68,13 +68,12 @@ const SCHEMA_FIELDS: Record<string, string[]> = {
     "nearest_airport",
     "roads",
     "major_crops",
-    "main_occupation",
     "primary_health_center",
-    "district_hospital",
     "post_title",
     "post_name",
+    "state_1",
   ],
-  "/api/tehsils": [
+  "/api/tehsil": [
     "block_id",
     "block_tehsil",
     "block_slug",
@@ -113,66 +112,58 @@ const SCHEMA_FIELDS: Record<string, string[]> = {
   "/api/village": [
     "village_id",
     "village_name",
-    "village_slug",
     "block_tehsil",
-    "block_slug",
     "district",
-    "district_slug",
     "state",
-    "state_slug",
-    "tehsil",
-    "country",
-    "census_year",
+    "pin_code",
+    "police_station",
     "total_population",
     "male_population",
     "female_population",
     "sex_ratio",
     "child_population_0_6",
-    "sc_population",
-    "st_population",
-    "total_households",
     "avg_literacy_rate",
     "male_literacy_rate",
     "female_literacy_rate",
-    "pin_code",
-    "latitude",
-    "longitude",
+    "sc_population",
+    "st_population",
+    "total_households",
+    "primary_school",
+    "secondary_school",
+    "primary_health_center",
     "nearest_town",
     "distance_to_town_km",
-    "nearest_city",
     "nearest_railway_station",
     "railway_distance_km",
     "nearest_airport",
     "airport_distance_km",
-    "nearest_bus_stop",
-    "nearest_college",
-    "primary_school",
-    "middle_school",
-    "secondary_school",
-    "primary_health_center",
-    "sub_health_center",
-    "district_hospital",
-    "private_clinic",
+    "major_crops",
+    "major_religions",
+    "festivals",
     "electricity",
     "roads",
-    "road_connectivity",
     "drinking_water",
-    "sanitation",
     "internet",
     "mobile_networks",
     "gram_panchayat",
     "ward_count",
     "terrain_geography",
     "climate_weather",
-    "major_crops",
     "main_occupation",
-    "livestock",
-    "local_market",
-    "major_religions",
-    "festivals",
     "village_rating_1_5",
+    "nearest_city",
+    "country",
+    "census_year",
+    "latitude",
+    "longitude",
+    "block_slug",
+    "district_slug",
+    "state_slug",
+    "village_slug",
     "post_title",
     "post_name",
+    "tehsil",
+    "farms",
   ],
 };
 
@@ -215,6 +206,8 @@ export default function UploadPage() {
       const firstRow = jsonData[0] as Record<string, unknown>;
       const excelColumns = Object.keys(firstRow);
       const schemaColumns = SCHEMA_FIELDS[apiEndpoint] || [];
+      console.log("Excel columns:", excelColumns);
+      console.log("Expected schema columns:", schemaColumns);
       const unknownColumns = excelColumns.filter(
         (col) => !schemaColumns.includes(col),
       );
@@ -226,6 +219,7 @@ export default function UploadPage() {
             `These fields are NOT in your Mongoose schema and will be automatically filtered out before uploading.\n\n` +
             `Do you want to continue?`,
         );
+        // console.warn("Unknown columns:", unknownColumns, proceed);
         if (!proceed) {
           setUploading(false);
           return;
@@ -254,7 +248,7 @@ export default function UploadPage() {
           );
         // // 🔍 DEBUG: Log what's being sent
         // console.log("Sending to API:", filteredRow);
-        // console.log("avg_literacy_rate value:", filteredRow.avg_literacy_rate);
+        // console.log("police_station value:", filteredRow.police_station);
 
         const rowName = (row.village_name ||
           row.district ||
@@ -346,7 +340,7 @@ export default function UploadPage() {
             >
               <option value="/api/states">States</option>
               <option value="/api/districts">Districts</option>
-              <option value="/api/tehsils">Tehsils</option>
+              <option value="/api/tehsil">Tehsils</option>
               <option value="/api/village">Villages</option>
             </select>
           </div>

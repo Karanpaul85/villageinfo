@@ -66,7 +66,29 @@ export async function POST(req) {
       );
     }
 
-    const district = await District.create(body);
+    // ✅ Convert empty values to null
+    Object.keys(body).forEach((key) => {
+      const value = body[key];
+
+      // Only set to null if it's ACTUALLY empty, not if it's a valid number
+      if (value === null || value === undefined || value === "") {
+        body[key] = null;
+      }
+      // Don't touch numbers, even if they're 0
+    });
+
+    const district = await District.findOneAndUpdate(
+      { district_id: body.district_id },
+      body,
+      {
+        returnDocument: "after", // Return updated doc
+        upsert: true, // Create if not exists
+        runValidators: true, // Validate
+        overwrite: false, // Don't replace entire doc, just update fields
+      },
+    );
+
+    console.log("Upserted district:", district);
 
     return NextResponse.json(district, { status: 201 });
   } catch (error) {

@@ -437,7 +437,7 @@ export default async function VillagePage({ params }: Props) {
                       Overall Literacy (%)
                     </td>
                     <td className="p-3 text-sm border-b border-gray-200">
-                      {villagesData?.overall_literacy}
+                      {villagesData?.avg_literacy_rate}
                     </td>
                   </tr>
                   <tr>

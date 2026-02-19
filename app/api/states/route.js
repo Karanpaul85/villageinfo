@@ -54,7 +54,27 @@ export async function POST(req) {
       );
     }
 
-    const state = await State.create(body);
+    // ✅ Convert empty values to null
+    Object.keys(body).forEach((key) => {
+      const value = body[key];
+
+      // Only set to null if it's ACTUALLY empty, not if it's a valid number
+      if (value === null || value === undefined || value === "") {
+        body[key] = null;
+      }
+      // Don't touch numbers, even if they're 0
+    });
+
+    const state = await State.findOneAndUpdate(
+      { state_id: body.state_id },
+      body,
+      {
+        returnDocument: "after",
+        upsert: true,
+        runValidators: true,
+        overwrite: false,
+      },
+    );
 
     return NextResponse.json(state, { status: 201 });
   } catch (error) {

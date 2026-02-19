@@ -81,7 +81,6 @@ export async function POST(req) {
         { status: 400 },
       );
     }
-
     // ✅ Convert empty values to null
     Object.keys(body).forEach((key) => {
       const value = body[key];
@@ -97,7 +96,7 @@ export async function POST(req) {
       { village_id: body.village_id },
       body, // Direct update without $set works when upsert is true
       {
-        new: true, // Return updated doc
+        returnDocument: "after", // Return updated doc
         upsert: true, // Create if not exists
         runValidators: true, // Validate
         overwrite: false, // Don't replace entire doc, just update fields
