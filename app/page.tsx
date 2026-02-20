@@ -1,6 +1,40 @@
 import Link from "next/link";
 import { getStates } from "@/utils/common";
 import LordIcon from "@/components/LordIcon";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Village Info India | Explore States, Districts & Villages",
+  description:
+    "Explore detailed information about villages, tehsils, districts, and states across India. Census data, population stats, literacy rates, and more.",
+  keywords: [
+    "village info india",
+    "india villages",
+    "district info",
+    "tehsil info",
+    "india census data",
+    "village population",
+    "india states",
+  ],
+  openGraph: {
+    title: "Village Info India | Explore States, Districts & Villages",
+    description:
+      "Explore detailed information about villages, tehsils, districts, and states across India.",
+    url: "https://villageinfo.vercel.app",
+    siteName: "Village Info India",
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Village Info India | Explore States, Districts & Villages",
+    description:
+      "Explore detailed information about villages, tehsils, districts, and states across India.",
+  },
+  alternates: {
+    canonical: "https://villageinfo.vercel.app",
+  },
+};
 
 export default async function Home() {
   const states = await getStates();
