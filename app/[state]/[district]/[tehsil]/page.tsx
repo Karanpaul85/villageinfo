@@ -491,7 +491,7 @@ export default async function TehsilPage({ params }: Props) {
         </div>
       </div>
       {/** all state link */}
-      <div className="flex items-center mt-8 text-sm gap-2 w-full md:w-2/3 border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
+      <div className="flex flex-wrap items-center mt-8 text-sm gap-2 w-full md:w-2/3 border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
         Explore more:{" "}
         <Link
           href={`/${tehsilsData?.state_slug}/${tehsilsData?.district_slug}/`}

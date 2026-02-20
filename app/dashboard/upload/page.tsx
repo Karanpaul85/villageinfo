@@ -140,6 +140,7 @@ const SCHEMA_FIELDS: Record<string, string[]> = {
     "major_religions",
     "festivals",
     "electricity",
+    "road_connectivity",
     "roads",
     "drinking_water",
     "internet",
