@@ -1,11 +1,11 @@
 "use client";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
-  // const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,14 +22,16 @@ export default function LoginPage() {
     setLoading(false);
 
     if (res.ok) {
-      router.push("/dashboard/upload");
+      const callbackUrl =
+        searchParams.get("callbackUrl") || "/dashboard/upload";
+      router.push(callbackUrl);
     } else {
       setError("Invalid username or password");
     }
   }
 
   return (
-    <div className=" flex items-center justify-center m-auto">
+    <div className="flex items-center justify-center m-auto">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80">
         <h1 className="text-2xl font-bold text-center">Admin Login</h1>
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
@@ -56,5 +58,20 @@ export default function LoginPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+// 👇 Wrap in Suspense here
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          Loading...
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

@@ -1,6 +1,8 @@
+import { REVALIDATE_TIME, HOST } from "@/lib/constants/constants";
+
 export async function getStates(params = {}) {
   try {
-    const url = new URL(`${process.env.HOST}/api/states`);
+    const url = new URL(`${HOST}/api/states`);
 
     // Add query parameters if provided
     Object.entries(params).forEach(([key, value]) => {
@@ -10,7 +12,7 @@ export async function getStates(params = {}) {
     });
 
     const res = await fetch(url.toString(), {
-      next: { revalidate: 86400, tags: ["states"] }, // revalidate every 24 hours
+      next: { revalidate: REVALIDATE_TIME, tags: ["states"] }, // revalidate every 24 hours
     });
 
     if (!res.ok)
@@ -34,7 +36,7 @@ export async function getStates(params = {}) {
 
 export async function getDistricts(params = {}) {
   try {
-    const url = new URL(`${process.env.HOST}/api/districts`);
+    const url = new URL(`${HOST}/api/districts`);
 
     // Add query parameters if provided
     Object.entries(params).forEach(([key, value]) => {
@@ -44,7 +46,7 @@ export async function getDistricts(params = {}) {
     });
 
     const res = await fetch(url.toString(), {
-      next: { revalidate: 86400, tags: ["districts"] }, // revalidate every 24 hours
+      next: { revalidate: REVALIDATE_TIME, tags: ["districts"] }, // revalidate every 24 hours
     });
 
     if (!res.ok)
@@ -70,7 +72,7 @@ export async function getDistricts(params = {}) {
 
 export async function getTehsils(params = {}) {
   try {
-    const url = new URL(`${process.env.HOST}/api/tehsil`);
+    const url = new URL(`${HOST}/api/tehsil`);
 
     // Add query parameters if provided
     Object.entries(params).forEach(([key, value]) => {
@@ -80,7 +82,7 @@ export async function getTehsils(params = {}) {
     });
 
     const res = await fetch(url.toString(), {
-      next: { revalidate: 86400, tags: ["tehsils"] }, // revalidate every 24 hours
+      next: { revalidate: REVALIDATE_TIME, tags: ["tehsils"] }, // revalidate every 24 hours
     });
 
     if (!res.ok)
@@ -106,7 +108,7 @@ export async function getTehsils(params = {}) {
 
 export async function getVillages(params = {}) {
   try {
-    const url = new URL(`${process.env.HOST}/api/village`);
+    const url = new URL(`${HOST}/api/village`);
 
     // Add query parameters if provided
     Object.entries(params).forEach(([key, value]) => {
@@ -116,7 +118,7 @@ export async function getVillages(params = {}) {
     });
 
     const res = await fetch(url.toString(), {
-      next: { revalidate: 86400, tags: ["villages"] }, // revalidate every 24 hours
+      next: { revalidate: REVALIDATE_TIME, tags: ["villages"] }, // revalidate every 24 hours
     });
 
     if (!res.ok)

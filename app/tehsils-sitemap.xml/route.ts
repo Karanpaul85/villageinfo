@@ -1,7 +1,7 @@
+import { HOST } from '@/lib/constants/constants';
 import { getStates, getDistricts, getTehsils } from '@/utils/common';
 import { NextResponse } from 'next/server';
 
-const baseUrl = process.env.baseURL || 'http://localhost:3000'
 
 export const revalidate = 86400
 
@@ -31,7 +31,7 @@ export async function GET() {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${tehsils.map((t: { state_slug: string, district_slug: string, block_slug: string }) => `  <url>
-    <loc>${baseUrl}/${t.state_slug}/${t.district_slug}/${t.block_slug}</loc>
+    <loc>${HOST}/${t.state_slug}/${t.district_slug}/${t.block_slug}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

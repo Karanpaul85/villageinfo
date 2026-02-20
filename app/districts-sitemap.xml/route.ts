@@ -1,7 +1,7 @@
+import { HOST } from '@/lib/constants/constants';
 import { getDistricts, getStates } from '@/utils/common';
 import { NextResponse } from 'next/server';
 
-const baseUrl = process.env.baseURL || 'http://localhost:3000';
 
 export const revalidate = 86400
 
@@ -16,7 +16,7 @@ export async function GET() {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${districts.map((d: { state_slug: string, district_slug: string }) => `  <url>
-    <loc>${baseUrl}/${d.state_slug}/${d.district_slug}</loc>
+    <loc>${HOST}/${d.state_slug}/${d.district_slug}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>

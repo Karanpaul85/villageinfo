@@ -1,7 +1,7 @@
+import { HOST } from '@/lib/constants/constants'
 import { getStates } from '@/utils/common'
 import { MetadataRoute } from 'next'
 
-const baseUrl = process.env.baseURL || 'http://localhost:3000'
 export const revalidate = 86400
 
 
@@ -14,7 +14,7 @@ interface State {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const states = await getStates();
     const stateUrls: MetadataRoute.Sitemap = states.map((state: State) => ({
-        url: `${baseUrl}/${state?.state_slug}`,
+        url: `${HOST}/${state?.state_slug}`,
         lastModified: new Date(),
         changeFrequency: 'weekly',
         priority: 1.0,
@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [
         {
-            url: baseUrl,
+            url: HOST,
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 1.0,

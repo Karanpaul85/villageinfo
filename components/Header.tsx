@@ -13,7 +13,7 @@ function Header() {
         <h1 className="text-2xl font-bold">Village Info</h1>
         {isDashboard && session && (
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => signOut({ callbackUrl: "/" })}
             className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2 rounded transition"
           >
             Logout
