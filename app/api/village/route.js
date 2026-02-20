@@ -13,13 +13,6 @@ export async function GET(req) {
     const block_slug = searchParams.get("block_slug");
     const village_slug = searchParams.get("village_slug");
 
-    console.log("GET /villages called with params:", {
-      state_slug,
-      district_slug,
-      block_slug,
-      village_slug,
-    });
-
     // Case 1: All 4 slugs provided → return single village details
     if (state_slug && district_slug && block_slug && village_slug) {
       const village = await Village.findOne({

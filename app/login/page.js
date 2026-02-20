@@ -1,11 +1,11 @@
 "use client";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -21,15 +21,8 @@ export default function LoginPage() {
     });
     setLoading(false);
 
-    // if (res.ok) {
-    //   router.push("/dashboard/upload");
-    // } else {
-    //   setError("Invalid username or password");
-    // }
     if (res.ok) {
-      const callbackUrl =
-        searchParams.get("callbackUrl") || "/dashboard/upload";
-      router.push(callbackUrl);
+      router.push("/dashboard/upload");
     } else {
       setError("Invalid username or password");
     }
