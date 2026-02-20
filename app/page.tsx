@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getStates } from "@/utils/common";
-import Image from "next/image";
+import LordIcon from "@/components/LordIcon";
 
 export default async function Home() {
   const states = await getStates();
@@ -15,14 +15,13 @@ export default async function Home() {
               <Link
                 href={`/${state.state_slug}`}
                 key={state._id}
-                className="flex items-center border border-gray-300 rounded-lg p-4 hover:bg-gray-100 transition"
+                className="state-link flex items-center border border-gray-300 rounded-lg p-4 hover:bg-gray-100 transition gap-4"
               >
-                <Image
-                  className="mr-2"
-                  src="/icons/mapPin.svg"
-                  alt={state.state}
-                  width={20}
-                  height={20}
+                <LordIcon
+                  src="/icons/mapPin.json"
+                  trigger="loop-on-hover"
+                  target=".state-link"
+                  size={24}
                 />
                 {state.state}
               </Link>

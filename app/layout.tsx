@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,11 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        {/* Lordicon Web Component script */}
+        <Script
+          src="https://cdn.lordicon.com/lordicon.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
