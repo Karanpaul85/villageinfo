@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Tehsil from "../../../lib/models/tehsil";
+import { revalidateTag } from "next/cache";
 
 export async function GET(req) {
   try {
@@ -34,7 +35,7 @@ export async function GET(req) {
       const tehsils = await Tehsil.find({ state_slug, district_slug })
         .sort({ block_tehsil: 1 })
         .select(
-          "block_tehsil block_slug total_population total_tehsils state_slug",
+          "block_tehsil block_slug total_population total_tehsils state_slug district_slug",
         )
         .lean();
 
@@ -89,6 +90,9 @@ export async function POST(req) {
         overwrite: false, // Don't replace entire doc, just update fields
       },
     );
+
+    // ✅ Clear cache after successful update
+    revalidateTag("tehsils");
 
     return NextResponse.json(tehsil, { status: 201 });
   } catch (error) {

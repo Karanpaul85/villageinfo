@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import State from "@/lib/models/State";
+import { revalidateTag } from "next/cache";
 
 export async function GET(req) {
   try {
@@ -75,6 +76,8 @@ export async function POST(req) {
         overwrite: false,
       },
     );
+    // ✅ Clear cache after successful update
+    revalidateTag("states");
 
     return NextResponse.json(state, { status: 201 });
   } catch (error) {

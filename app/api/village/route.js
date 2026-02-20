@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Village from "../../../lib/models/village";
+import { revalidateTag } from "next/cache";
 
 export async function GET(req) {
   try {
@@ -102,6 +103,8 @@ export async function POST(req) {
         overwrite: false, // Don't replace entire doc, just update fields
       },
     );
+    // ✅ Clear cache after successful update
+    revalidateTag("villages");
 
     return NextResponse.json(village, { status: 201 });
   } catch (error) {

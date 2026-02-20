@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import District from "@/lib/models/district";
+import { revalidateTag } from "next/cache";
 
 export async function GET(req) {
   try {
@@ -88,7 +89,8 @@ export async function POST(req) {
       },
     );
 
-    console.log("Upserted district:", district);
+    // ✅ Clear cache after successful update
+    revalidateTag("districts");
 
     return NextResponse.json(district, { status: 201 });
   } catch (error) {
