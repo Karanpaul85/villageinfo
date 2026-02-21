@@ -1,4 +1,5 @@
-import { getTehsils, getVillages } from "@/utils/common";
+import HtmlContent from "@/components/htmlContent";
+import { getContent, getTehsils, getVillages } from "@/utils/common";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -13,18 +14,39 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state, district, tehsil } = await params;
-  const tehsilsData = await getTehsils({
-    state_slug: state,
-    district_slug: district,
-    block_slug: tehsil,
-  });
+
+  const [content, tehsilsData] = await Promise.all([
+    getContent("tehsil", {
+      state_slug: state,
+      district_slug: district,
+      block_slug: tehsil,
+    }),
+    getTehsils({
+      state_slug: state,
+      district_slug: district,
+      block_slug: tehsil,
+    }),
+  ]);
+
+  const defaultTitle = `${tehsilsData?.block_tehsil} Tehsil, ${tehsilsData?.district}, ${tehsilsData?.state} – Villages List, Population and Census`;
+  const defaultDescription = `${tehsilsData?.block_tehsil} is a tehsil in ${tehsilsData?.district} district of ${tehsilsData?.state}. This page provides tehsil-level statistics including total villages, population data and literacy rates.`;
+
+  const title =
+    !content?.error && content?.title ? content.title : defaultTitle;
+  const description =
+    !content?.error && content?.description
+      ? content.description
+      : defaultDescription;
 
   return {
-    title: `${tehsilsData?.block_tehsil} Tehsil, ${tehsilsData?.district}, ${tehsilsData?.state} – Villages List, Population and Census`,
-    description: `${tehsilsData?.block_tehsil} is a tehsil in ${tehsilsData?.district} district of ${tehsilsData?.state}. This page provides tehsil-level statistics including total villages, population data and literacy rates.`,
+    title,
+    description,
     openGraph: {
-      title: `${tehsilsData?.block_tehsil} Tehsil, ${tehsilsData?.district}, ${tehsilsData?.state} – Villages List, Population and Census`,
-      description: `${tehsilsData?.block_tehsil} is a tehsil in ${tehsilsData?.district} district of ${tehsilsData?.state}. Explore villages, population and census data.`,
+      title,
+      description:
+        !content?.error && content?.description
+          ? content.description
+          : `${tehsilsData?.block_tehsil} is a tehsil in ${tehsilsData?.district} district of ${tehsilsData?.state}. Explore villages, population and census data.`,
     },
   };
 }
@@ -39,6 +61,12 @@ export default async function TehsilPage({ params }: Props) {
   });
 
   const villagesData = await getVillages({
+    state_slug: state,
+    district_slug: district,
+    block_slug: tehsil,
+  });
+
+  const content = await getContent("tehsil", {
     state_slug: state,
     district_slug: district,
     block_slug: tehsil,
@@ -72,12 +100,20 @@ export default async function TehsilPage({ params }: Props) {
               {tehsilsData?.block_tehsil} Tehsil, {tehsilsData?.district},{" "}
               {tehsilsData?.state} – Villages List, Population and Census
             </h1>
-            <p className="text-slate-700 text-sm">
-              {tehsilsData?.block_tehsil} is a tehsil (sub-district) located in{" "}
-              {tehsilsData?.district} district of {tehsilsData?.state}, India.
-              This page provides tehsil profile, total villages, population
-              summary, literacy and connectivity details.
-            </p>
+            {content.top_content ? (
+              <HtmlContent
+                type="top"
+                content={content.top_content}
+                customClass="mb-0"
+              />
+            ) : (
+              <p className="text-slate-700 text-sm">
+                {tehsilsData?.block_tehsil} is a tehsil (sub-district) located
+                in {tehsilsData?.district} district of {tehsilsData?.state},
+                India. This page provides tehsil profile, total villages,
+                population summary, literacy and connectivity details.
+              </p>
+            )}
           </div>
           <div className="flex w-full md:w-1/3 flex-col gap-1 border border-gray-200 rounded-xl bg-linear-to-b from-slate-50 to-white p-4.5 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
             <p className="text-xs text-slate-500">District Snapshot</p>
@@ -490,8 +526,11 @@ export default async function TehsilPage({ params }: Props) {
           </div>
         </div>
       </div>
+      {content.bottom_content && (
+        <HtmlContent type="bottom" content={content.bottom_content} />
+      )}
       {/** all state link */}
-      <div className="flex flex-wrap items-center mt-8 text-sm gap-2 w-full md:w-2/3 border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
+      <div className="flex flex-wrap items-center mt-8 text-sm gap-2 w-full  border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
         Explore more:{" "}
         <Link
           href={`/${tehsilsData?.state_slug}/${tehsilsData?.district_slug}/`}

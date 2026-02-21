@@ -1,4 +1,5 @@
-import { getVillages } from "@/utils/common";
+import HtmlContent from "@/components/htmlContent";
+import { getContent, getVillages } from "@/utils/common";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,19 +15,41 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state, district, tehsil, village } = await params;
-  const villagesData = await getVillages({
-    state_slug: state,
-    district_slug: district,
-    block_slug: tehsil,
-    village_slug: village,
-  });
+
+  const [content, villagesData] = await Promise.all([
+    getContent("village", {
+      state_slug: state,
+      district_slug: district,
+      block_slug: tehsil,
+      village_slug: village,
+    }),
+    getVillages({
+      state_slug: state,
+      district_slug: district,
+      block_slug: tehsil,
+      village_slug: village,
+    }),
+  ]);
+
+  const defaultTitle = `${villagesData?.village_name} Village, ${villagesData?.district}, ${villagesData?.state} – Population, Census, Map & Connectivity`;
+  const defaultDescription = `${villagesData?.village_name} is a village in ${villagesData?.block_tehsil} block of ${villagesData?.district} district of ${villagesData?.state}. This page provides village-level statistics including population data, connectivity and map details.`;
+
+  const title =
+    !content?.error && content?.title ? content.title : defaultTitle;
+  const description =
+    !content?.error && content?.description
+      ? content.description
+      : defaultDescription;
 
   return {
-    title: `${villagesData?.village_name} Village, ${villagesData?.district}, ${villagesData?.state} – Population, Census, Map & Connectivity`,
-    description: `${villagesData?.village_name} is a village in ${villagesData?.block_tehsil} block of ${villagesData?.district} district of ${villagesData?.state}. This page provides village-level statistics including population data, connectivity and map details.`,
+    title,
+    description,
     openGraph: {
-      title: `${villagesData?.village_name} Village, ${villagesData?.district}, ${villagesData?.state} – Population, Census, Map & Connectivity`,
-      description: `${villagesData?.village_name} is a village in ${villagesData?.block_tehsil} block of ${villagesData?.district} district of ${villagesData?.state}. Explore village-level statistics including population data, connectivity and map details.`,
+      title,
+      description:
+        !content?.error && content?.description
+          ? content.description
+          : `${villagesData?.village_name} is a village in ${villagesData?.block_tehsil} block of ${villagesData?.district} district of ${villagesData?.state}. Explore village-level statistics including population data, connectivity and map details.`,
     },
   };
 }
@@ -35,6 +58,13 @@ export default async function VillagePage({ params }: Props) {
   const { state, district, tehsil, village } = await params;
 
   const villagesData = await getVillages({
+    state_slug: state,
+    district_slug: district,
+    block_slug: tehsil,
+    village_slug: village,
+  });
+
+  const content = await getContent("village", {
     state_slug: state,
     district_slug: district,
     block_slug: tehsil,
@@ -76,11 +106,20 @@ export default async function VillagePage({ params }: Props) {
               {villagesData?.village_name} Village, {villagesData?.district},{" "}
               {villagesData?.state} – Population, Census, Map & Connectivity
             </h1>
-            <p className="text-slate-700 text-sm">
-              {villagesData?.village_name} is a village located in{" "}
-              {villagesData?.block_tehsil} block of {villagesData?.district}{" "}
-              district in {villagesData?.state}, India.
-            </p>
+            {content.top_content ? (
+              <HtmlContent
+                type="top"
+                content={content.top_content}
+                customClass="mb-0"
+              />
+            ) : (
+              <p className="text-slate-700 text-sm">
+                {villagesData?.village_name} is a village located in{" "}
+                {villagesData?.block_tehsil} block of {villagesData?.district}{" "}
+                district in {villagesData?.state}, India.
+              </p>
+            )}
+
             <div className="flex w-full justify-between gap-4">
               <div className="flex w-full md:w-1/3 px-3 py-2 border border-gray-200 rounded-xl text-xs font-semibold">
                 PinCode : {villagesData?.pin_code}
@@ -554,6 +593,9 @@ export default async function VillagePage({ params }: Props) {
           </div>
         </div>
       </div>
+      {content.bottom_content && (
+        <HtmlContent type="bottom" content={content.bottom_content} />
+      )}
       {/** all state link */}
       <div className="flex flex-wrap items-center mt-8 text-sm gap-2 w-full border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
         Explore more:{" "}

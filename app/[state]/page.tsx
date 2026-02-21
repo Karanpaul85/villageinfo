@@ -1,7 +1,8 @@
-import { getDistricts, getStates } from "@/utils/common";
+import { getContent, getDistricts, getStates } from "@/utils/common";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import HtmlContent from "@/components/htmlContent";
 
 type Props = {
   params: Promise<{
@@ -11,21 +12,37 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state } = await params;
-  const stateData = await getStates({ state_slug: state });
-  // console.log("State data for metadata generation:", stateData);
+  const [content, stateData] = await Promise.all([
+    getContent("state", { state_slug: state }),
+    getStates({ state_slug: state }),
+  ]);
+
+  const defaultTitle = `${stateData?.state} - Districts, Tehsils, Villages, Population and Census`;
+  const defaultDescription = `${stateData?.state} is a state in India. This page provides state-level statistics including total districts, tehsils, villages, population data and literacy rates.`;
+
+  const title =
+    !content?.error && content?.title ? content.title : defaultTitle;
+  const description =
+    !content?.error && content?.description
+      ? content.description
+      : defaultDescription;
 
   return {
-    title: `${stateData?.state} - Districts, Tehsils, Villages, Population and Census`,
-    description: `${stateData?.state} is a state in India. This page provides state-level statistics including total districts, tehsils, villages, population data and literacy rates.`,
+    title,
+    description,
     openGraph: {
-      title: `${stateData?.state} - Districts, Tehsils, Villages, Population and Census`,
-      description: `${stateData?.state} is a state in India. Explore districts, tehsils, villages, population and census data.`,
+      title,
+      description:
+        !content?.error && content?.description
+          ? content.description
+          : `${stateData?.state} is a state in India. Explore districts, tehsils, villages, population and census data.`,
     },
   };
 }
 
 export default async function StatePage({ params }: Props) {
   const { state } = await params;
+  const content = await getContent("state", { state_slug: state });
   const stateData = await getStates({ state_slug: state });
   const districts = await getDistricts({ state_slug: state });
 
@@ -49,11 +66,20 @@ export default async function StatePage({ params }: Props) {
               {stateData?.state} - Districts, Tehsils, Villages, Population and
               Census
             </h1>
-            <p className="text-slate-700 text-sm">
-              {stateData?.state} is a state in India. This page provides
-              state-level statistics including total districts, tehsils,
-              villages, population data and literacy rates.
-            </p>
+
+            {content.top_content ? (
+              <HtmlContent
+                type="top"
+                content={content.top_content}
+                customClass="mb-0"
+              />
+            ) : (
+              <p className="text-slate-700 text-sm">
+                {stateData?.state} is a state in India. This page provides
+                state-level statistics including total districts, tehsils,
+                villages, population data and literacy rates.
+              </p>
+            )}
           </div>
           <div className="flex w-full md:w-1/3 flex-col gap-1 border border-gray-200 rounded-xl bg-linear-to-b from-slate-50 to-white p-4.5 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
             <p className="text-xs text-slate-500">State Snapshot</p>
@@ -324,8 +350,12 @@ export default async function StatePage({ params }: Props) {
           </div>
         </div>
       </div>
+      {content.bottom_content && (
+        <HtmlContent type="bottom" content={content.bottom_content} />
+      )}
+
       {/** all state link */}
-      <div className="flex flex-wrap mt-8 text-sm gap-2 w-full md:w-2/3 border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
+      <div className="flex flex-wrap mt-8 text-sm gap-2 w-full border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
         Explore more:{" "}
         <Link href="/" className="text-blue-600">
           All States of India

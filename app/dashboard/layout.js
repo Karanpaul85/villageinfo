@@ -2,6 +2,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import LeftSideBar from "@/components/dashboard/leftSideBar";
 
 export default function DashboardLayout({ children }) {
   const { status } = useSession();
@@ -39,5 +40,10 @@ export default function DashboardLayout({ children }) {
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <main className="flex w-full md:max-w-275 mx-auto p-4 flex-wrap gap-4 md:flex-nowrap">
+      <LeftSideBar />
+      {children}
+    </main>
+  );
 }

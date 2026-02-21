@@ -22,8 +22,7 @@ function LoginForm() {
     setLoading(false);
 
     if (res.ok) {
-      const callbackUrl =
-        searchParams.get("callbackUrl") || "/dashboard/upload";
+      const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
       router.push(callbackUrl);
     } else {
       setError("Invalid username or password");

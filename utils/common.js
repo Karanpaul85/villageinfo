@@ -141,3 +141,83 @@ export async function getVillages(params = {}) {
     return [];
   }
 }
+
+// GET /api/content?page_id=home
+// GET /api/content?page_id=home
+export async function getContent(page_id, params = {}) {
+  try {
+    const url = new URL(`${HOST}/api/content`);
+
+    url.searchParams.append("page_id", page_id.toLowerCase());
+
+    // Append any slugs or extra params (state_slug, district_slug, tehsil_slug, village_slug)
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, value);
+      }
+    });
+
+    const res = await fetch(url.toString(), {
+      next: { revalidate: REVALIDATE_TIME, tags: ["content", page_id] },
+    });
+
+    if (!res.ok)
+      return {
+        error: `Failed to fetch content: ${res.status}`,
+        status: res.status,
+      };
+
+    return await res.json();
+  } catch (error) {
+    console.error("getContent error:", error);
+    return null;
+  }
+}
+
+// POST /api/content
+export async function saveContent(page_id, data = {}, params = {}) {
+  try {
+    const url = new URL(`${HOST}/api/content`);
+
+    // Parse blog_content string → JSON if needed
+    let blog_content = data.blog_content ?? null;
+    if (typeof blog_content === "string" && blog_content.trim()) {
+      try {
+        blog_content = JSON.parse(blog_content);
+      } catch {
+        return { error: "Invalid JSON in blog_content" };
+      }
+    }
+
+    // Resolve slug based on page_id or passed params
+    // Priority: explicit params > page_id inference
+    const slugs = {
+      ...(params.state_slug && { state_slug: params.state_slug }),
+      ...(params.district_slug && { district_slug: params.district_slug }),
+      ...(params.block_slug && { block_slug: params.block_slug }),
+      ...(params.village_slug && { village_slug: params.village_slug }),
+    };
+
+    const res = await fetch(url.toString(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        page_id: page_id.toLowerCase(),
+        ...slugs,
+        ...data,
+        blog_content,
+      }),
+    });
+
+    if (!res.ok)
+      return {
+        error: `Failed to save content: ${res.status}`,
+        status: res.status,
+      };
+
+    return await res.json();
+  } catch (error) {
+    console.error("saveContent error:", error);
+    return { error: "Unexpected error while saving content" };
+  }
+}
