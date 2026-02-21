@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import HtmlContent from "@/components/htmlContent";
+import BlogSection from "@/components/BlogSection";
 
 type Props = {
   params: Promise<{
@@ -494,6 +495,9 @@ export default async function DistrictPage({ params }: Props) {
           </div>
         </div>
       </div>
+      {content?.blog_content && (
+        <BlogSection blogData={content?.blog_content} />
+      )}
       {content.bottom_content && (
         <HtmlContent type="bottom" content={content.bottom_content} />
       )}

@@ -1,3 +1,5 @@
+import BlogSection from "@/components/BlogSection";
+import FooterExploreMore from "@/components/footerExploreMore";
 import HtmlContent from "@/components/htmlContent";
 import { getContent, getVillages } from "@/utils/common";
 import { Metadata } from "next";
@@ -593,6 +595,9 @@ export default async function VillagePage({ params }: Props) {
           </div>
         </div>
       </div>
+      {content?.blog_content && (
+        <BlogSection blogData={content?.blog_content} />
+      )}
       {content.bottom_content && (
         <HtmlContent type="bottom" content={content.bottom_content} />
       )}

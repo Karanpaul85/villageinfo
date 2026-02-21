@@ -3,6 +3,7 @@ import { getContent, getStates } from "@/utils/common";
 import LordIcon from "@/components/LordIcon";
 import { Metadata } from "next";
 import HtmlContent from "@/components/htmlContent";
+import BlogSection from "@/components/BlogSection";
 
 const DEFAULT_METADATA = {
   title: "Village Info India | Explore States, Districts & Villages",
@@ -55,7 +56,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const states = await getStates();
   const content = await getContent("home");
-  console.log(content, "hello");
   return (
     <main className="flex w-full md:max-w-275 mx-auto p-4 flex-wrap">
       {states.length === 0 ? (
@@ -84,6 +84,9 @@ export default async function Home() {
               ),
             )}
           </div>
+          {content?.blog_content && (
+            <BlogSection blogData={content?.blog_content} />
+          )}
           {content.bottom_content && (
             <HtmlContent type="bottom" content={content.bottom_content} />
           )}

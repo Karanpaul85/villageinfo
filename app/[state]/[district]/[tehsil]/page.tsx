@@ -1,3 +1,4 @@
+import BlogSection from "@/components/BlogSection";
 import HtmlContent from "@/components/htmlContent";
 import { getContent, getTehsils, getVillages } from "@/utils/common";
 import { Metadata } from "next";
@@ -91,7 +92,7 @@ export default async function TehsilPage({ params }: Props) {
         <Link href={`/${state}/${district}`} className="text-indigo-600">
           {district}
         </Link>{" "}
-        › {district}
+        › {tehsil}
       </div>
       <div className="flex w-full flex-col border gap-4 border-gray-200 rounded-2xl bg-linear-to-b from-slate-50 to-white p-4.5 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
         <div className="flex w-full flex-wrap gap-4 md:flex-nowrap">
@@ -526,9 +527,13 @@ export default async function TehsilPage({ params }: Props) {
           </div>
         </div>
       </div>
+      {content?.blog_content && (
+        <BlogSection blogData={content?.blog_content} />
+      )}
       {content.bottom_content && (
         <HtmlContent type="bottom" content={content.bottom_content} />
       )}
+      {console.log(tehsilsData)}
       {/** all state link */}
       <div className="flex flex-wrap items-center mt-8 text-sm gap-2 w-full  border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
         Explore more:{" "}
