@@ -84,7 +84,6 @@ export default async function Home() {
               ),
             )}
           </div>
-          <div>{content?.blog_content?.length}</div>
           {content?.blog_content?.length > 0 && (
             <BlogSection blogData={content?.blog_content} />
           )}
