@@ -1,5 +1,4 @@
 import BlogSection from "@/components/BlogSection";
-import FooterExploreMore from "@/components/footerExploreMore";
 import HtmlContent from "@/components/htmlContent";
 import { getContent, getVillages } from "@/utils/common";
 import { Metadata } from "next";
