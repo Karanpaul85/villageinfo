@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Village from "../../../lib/models/village";
 import { revalidateTag } from "next/cache";
+import { SITE_MAP_PER_PAGE } from "@/lib/constants/constants";
 
 export async function GET(req) {
   try {
@@ -12,6 +13,7 @@ export async function GET(req) {
     const district_slug = searchParams.get("district_slug");
     const block_slug = searchParams.get("block_slug");
     const village_slug = searchParams.get("village_slug");
+    const pageIndex = searchParams.get("pageIndex");
 
     // Case 1: All 4 slugs provided → return single village details
     if (state_slug && district_slug && block_slug && village_slug) {
@@ -44,6 +46,27 @@ export async function GET(req) {
         .lean();
 
       return NextResponse.json({ allVillages: villages }, { status: 200 });
+    }
+
+    // Case 4: pageIndex provided → return paginated villages
+    if (pageIndex) {
+      const pageIndex = parseInt(searchParams.get("pageIndex"));
+      const villages = await Village.find()
+        .sort({ village_name: 1 })
+        .skip(pageIndex * SITE_MAP_PER_PAGE)
+        .limit(SITE_MAP_PER_PAGE)
+        .select(
+          "village_name village_slug state state_slug district district_slug block_slug block_tehsil total_population updatedAt",
+        )
+        .lean();
+
+      return NextResponse.json({ allVillages: villages }, { status: 200 });
+    }
+
+    // Case 3: No params → return total villages count
+    if (!state_slug && !district_slug && !block_slug && !village_slug) {
+      const totalVillages = await Village.countDocuments();
+      return NextResponse.json({ totalVillages }, { status: 200 });
     }
 
     // No params or incomplete → error

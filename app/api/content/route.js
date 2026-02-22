@@ -147,6 +147,7 @@ function buildSlugQuery(
     case "village":
       if (village_slug) query.village_slug = village_slug;
     // falls through
+    case "tehsil": // ← add this
     case "block":
       if (block_slug) query.block_slug = block_slug;
     // falls through
@@ -176,6 +177,7 @@ function validateSlugs(
       if (!district_slug)
         return "district_slug is required for page_id=district";
       break;
+    case "tehsil": // ← add this
     case "block":
       if (!state_slug) return "state_slug is required for page_id=block";
       if (!district_slug) return "district_slug is required for page_id=block";

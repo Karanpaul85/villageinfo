@@ -1,5 +1,6 @@
 import BlogSection from "@/components/BlogSection";
 import HtmlContent from "@/components/htmlContent";
+// import WeatherWidget from "@/components/WeatherWidget";
 import { getContent, getVillages } from "@/utils/common";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -600,6 +601,7 @@ export default async function VillagePage({ params }: Props) {
       {content.bottom_content && (
         <HtmlContent type="bottom" content={content.bottom_content} />
       )}
+      {/* <WeatherWidget latitude={28.5235} longitude={77.4057} /> */}
       {/** all state link */}
       <div className="flex flex-wrap items-center mt-8 text-sm gap-2 w-full border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
         Explore more:{" "}
