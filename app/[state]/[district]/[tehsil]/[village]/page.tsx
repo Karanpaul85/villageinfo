@@ -6,6 +6,62 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+// ✅ Serve stale page while revalidating in background every 24hrs
+export const revalidate = 86400;
+
+// ✅ Allow new villages (not in generateStaticParams) to be SSR'd on first
+//    visit, then cached statically going forward
+export const dynamicParams = true;
+
+type VillageSlug = {
+  state_slug: string;
+  district_slug: string;
+  block_slug: string;
+  village_slug: string;
+};
+
+// ✅ Pre-render all villages at build time using pagination
+//    (your API returns count when no params, and paginated list via pageIndex)
+export async function generateStaticParams() {
+  try {
+    // Step 1: Get total count
+    const countRes = await fetch(`${process.env.HOST}/api/village`, {
+      cache: "no-store",
+    });
+    const { totalVillages } = await countRes.json();
+
+    if (!totalVillages) return [];
+
+    const LIMIT = 1000; // must match SITE_MAP_PER_PAGE in your constants
+    const totalPages = Math.ceil(totalVillages / LIMIT);
+
+    // Step 2: Fetch all pages in parallel
+    const pages = await Promise.all(
+      Array.from({ length: totalPages }, (_, i) =>
+        fetch(`${process.env.HOST}/api/village?pageIndex=${i}`, {
+          cache: "no-store",
+        })
+          .then((res) => res.json())
+          .then((data) => (data.allVillages ?? []) as VillageSlug[]),
+      ),
+    );
+
+    const villages = pages.flat();
+
+    console.log(`Generating static params for ${villages.length} villages...`);
+
+    return villages.map((v) => ({
+      state: v.state_slug,
+      district: v.district_slug,
+      tehsil: v.block_slug,
+      village: v.village_slug,
+    }));
+  } catch (error) {
+    console.error("generateStaticParams error:", error);
+    return [];
+  }
+}
+
 type Props = {
   params: Promise<{
     state: string;
@@ -73,7 +129,6 @@ export default async function VillagePage({ params }: Props) {
     village_slug: village,
   });
 
-  // Show 404 if district not found
   if (!villagesData || villagesData?.status === 404) {
     notFound();
   }
@@ -176,7 +231,8 @@ export default async function VillagePage({ params }: Props) {
           </div>
         </div>
       </div>
-      {/**overview */}
+
+      {/* Overview */}
       <div className="flex w-full mt-8 flex-col">
         <h2 className="text-lg md:text-2xl mb-3 pl-3 border-l-[5px] border-l-blue-600 font-bold">
           Overview of {villagesData?.village_name} Village
@@ -264,7 +320,6 @@ export default async function VillagePage({ params }: Props) {
                       {villagesData?.electricity}
                     </td>
                   </tr>
-
                   <tr>
                     <td className="font-medium p-3 text-sm bg-slate-50 w-[48%] border-b border-gray-200">
                       Nearest City
@@ -287,7 +342,8 @@ export default async function VillagePage({ params }: Props) {
           </div>
         </div>
       </div>
-      {/**overview */}
+
+      {/* Location & Map */}
       <div className="flex w-full mt-8 flex-col">
         <h2 className="text-lg md:text-2xl mb-3 pl-3 border-l-[5px] border-l-blue-600 font-bold">
           Location of {villagesData?.village_name} Village & Google Map
@@ -361,7 +417,7 @@ export default async function VillagePage({ params }: Props) {
         </div>
       </div>
 
-      {/**overview */}
+      {/* How to Reach */}
       <div className="flex w-full mt-8 flex-col">
         <h2 className="text-lg md:text-2xl mb-3 pl-3 border-l-[5px] border-l-blue-600 font-bold">
           How to Reach {villagesData?.village_name} Village
@@ -383,7 +439,8 @@ export default async function VillagePage({ params }: Props) {
           </div>
         </div>
       </div>
-      {/**population */}
+
+      {/* Population */}
       <div className="flex w-full mt-8 flex-col">
         <h2 className="text-lg md:text-2xl mb-3 pl-3 border-l-[5px] border-l-blue-600 font-bold">
           Population of {villagesData?.district} Tehsil (Census{" "}
@@ -464,7 +521,8 @@ export default async function VillagePage({ params }: Props) {
           </div>
         </div>
       </div>
-      {/**overview */}
+
+      {/* Literacy */}
       <div className="flex w-full mt-8 flex-col">
         <h2 className="text-lg md:text-2xl mb-3 pl-3 border-l-[5px] border-l-blue-600 font-bold">
           Literacy of {villagesData?.village_name}
@@ -492,7 +550,7 @@ export default async function VillagePage({ params }: Props) {
                   </tr>
                   <tr>
                     <td className="font-medium p-3 text-sm bg-slate-50 w-[48%] border-b border-gray-200">
-                      Female Literacy (%){" "}
+                      Female Literacy (%)
                     </td>
                     <td className="p-3 text-sm border-b border-gray-200">
                       {villagesData?.female_literacy_rate}
@@ -542,7 +600,8 @@ export default async function VillagePage({ params }: Props) {
           </div>
         </div>
       </div>
-      {/**overview */}
+
+      {/* Facilities */}
       <div className="flex w-full mt-8 flex-col">
         <h2 className="text-lg md:text-2xl mb-3 pl-3 border-l-[5px] border-l-blue-600 font-bold">
           Facilities & Development in {villagesData?.village_name}
@@ -595,14 +654,17 @@ export default async function VillagePage({ params }: Props) {
           </div>
         </div>
       </div>
+
       {content?.blog_content && (
         <BlogSection blogData={content?.blog_content} />
       )}
       {content.bottom_content && (
         <HtmlContent type="bottom" content={content.bottom_content} />
       )}
+
       {/* <WeatherWidget latitude={28.5235} longitude={77.4057} /> */}
-      {/** all state link */}
+
+      {/* Explore more links */}
       <div className="flex flex-wrap items-center mt-8 text-sm gap-2 w-full border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
         Explore more:{" "}
         <Link
