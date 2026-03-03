@@ -68,7 +68,7 @@ export async function POST(req) {
 
     const state = await State.findOneAndUpdate(
       { state_id: body.state_id },
-      body,
+      { $set: body },
       {
         returnDocument: "after",
         upsert: true,
@@ -77,8 +77,7 @@ export async function POST(req) {
       },
     );
     // ✅ Clear cache after successful update
-    revalidateTag("states");
-
+    revalidateTag("states", "max");
     return NextResponse.json(state, { status: 201 });
   } catch (error) {
     console.error("POST /states error:", error);
