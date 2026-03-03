@@ -14,6 +14,7 @@ import List from "@/components/List";
 import Breadcrumb from "@/components/Breadcrumb";
 import About from "@/components/About";
 import PopularList from "@/components/PopularList";
+import StateSchema from "@/components/Stateschema";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -331,6 +332,7 @@ export default async function StatePage({ params }: Props) {
       {content?.bottom_content && (
         <HtmlContent type="bottom" content={content.bottom_content} />
       )}
+      <StateSchema s={stateData} districts={districts} />
     </main>
   );
 }
