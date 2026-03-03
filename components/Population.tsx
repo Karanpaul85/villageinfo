@@ -92,7 +92,7 @@ export default function Population({
         </div>
 
         {/* Children + SC/ST */}
-        <div className="flex w-full gap-4">
+        <div className="flex w-full gap-4 flex-wrap md:flex-nowrap">
           {/* Children Population */}
           <div className="flex w-full md:w-1/2 flex-wrap rounded-lg overflow-hidden border border-gray-200">
             <div className="w-full uppercase text-[#64748b] text-sm tracking-[0.08em] p-3 bg-[#f8fafc] border-b border-b-gray-200">

@@ -12,6 +12,8 @@ import Literacy from "@/components/Literacy";
 import Workers from "@/components/Workers";
 import List from "@/components/List";
 import Breadcrumb from "@/components/Breadcrumb";
+import About from "@/components/About";
+import PopularList from "@/components/PopularList";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -213,6 +215,16 @@ export default async function StatePage({ params }: Props) {
     { label: stateName, redirectionUrl: null },
   ];
 
+  const topPopulatedDistricts = [
+    { name: "Kaithal", redirectionUrl: "/" },
+    { name: "Kaithal", redirectionUrl: "/" },
+    { name: "Kaithal", redirectionUrl: "/" },
+    { name: "Kaithal", redirectionUrl: "/" },
+    { name: "Kaithal", redirectionUrl: "/" },
+    { name: "Kaithal", redirectionUrl: "/" },
+    { name: `View All States`, redirectionUrl: "/" },
+  ];
+
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
@@ -283,19 +295,37 @@ export default async function StatePage({ params }: Props) {
           />
         </div>
       </div>
-
-      <Administrative heading={stateName} data={adminData} />
-      <Population
-        heading={stateName}
-        year={census_year}
-        overAllPopulation={overAllPopulation}
-        childrenPopulation={childrenPopulation}
-        scStPopulation={scStPopulation}
-      />
-      <Religion heading={stateName} religionData={religionData} />
-      <Literacy heading={stateName} data={literacyData} />
-      <Workers heading={stateName} data={workerData} />
-      <List type="state" heading={stateName} data={districtData} />
+      <div className="flex w-full gap-4 mt-4 flex-wrap md:flex-nowrap">
+        <div className="w-full md:w-2/3">
+          <Administrative heading={stateName} data={adminData} />
+          <Population
+            heading={stateName}
+            year={census_year}
+            overAllPopulation={overAllPopulation}
+            childrenPopulation={childrenPopulation}
+            scStPopulation={scStPopulation}
+          />
+          <Religion heading={stateName} religionData={religionData} />
+          <Literacy heading={stateName} data={literacyData} />
+          <Workers heading={stateName} data={workerData} />
+          <List type="state" heading={stateName} data={districtData} />
+        </div>
+        <div className="w-full md:w-1/3 flex flex-col gap-4">
+          <About type="state" name={stateName} />
+          <PopularList
+            heading={`Top Populated ${stateName} Districts`}
+            listData={topPopulatedDistricts}
+          />
+          <PopularList
+            heading={`Top Literate ${stateName} Districts`}
+            listData={topPopulatedDistricts}
+          />
+          <PopularList
+            heading={`Explore Other States`}
+            listData={topPopulatedDistricts}
+          />
+        </div>
+      </div>
 
       {content?.blog_content && <BlogSection blogData={content.blog_content} />}
       {content?.bottom_content && (
