@@ -80,7 +80,7 @@ export async function POST(req) {
 
     const district = await District.findOneAndUpdate(
       { district_id: body.district_id },
-      body,
+      { $set: body },
       {
         returnDocument: "after", // Return updated doc
         upsert: true, // Create if not exists
@@ -90,7 +90,7 @@ export async function POST(req) {
     );
 
     // ✅ Clear cache after successful update
-    revalidateTag("districts");
+    revalidateTag("districts", "max");
 
     return NextResponse.json(district, { status: 201 });
   } catch (error) {
