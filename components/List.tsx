@@ -63,7 +63,7 @@ export default function List({ type, heading, data }: Props) {
                 <TD>{index + 1}</TD>
                 <TD>
                   <Link
-                    href={`/${item?.state_slug}/${item?.district_slug}/${item?.tehsil_slug}`}
+                    href={`/${[item?.state_slug, item?.district_slug, item?.tehsil_slug].filter(Boolean).join("/")}`}
                   >
                     {item.name}
                   </Link>
