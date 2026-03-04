@@ -11,6 +11,7 @@ type ListItem = {
   state_slug?: string; // optional — only needed when rows are links
   district_slug?: string;
   tehsil_slug?: string;
+  village_slug?: string;
 };
 
 type Props = {
@@ -63,7 +64,7 @@ export default function List({ type, heading, data }: Props) {
                 <TD>{index + 1}</TD>
                 <TD>
                   <Link
-                    href={`/${[item?.state_slug, item?.district_slug, item?.tehsil_slug].filter(Boolean).join("/")}`}
+                    href={`/${[item?.state_slug, item?.district_slug, item?.tehsil_slug, item?.village_slug].filter(Boolean).join("/")}`}
                   >
                     {item.name}
                   </Link>

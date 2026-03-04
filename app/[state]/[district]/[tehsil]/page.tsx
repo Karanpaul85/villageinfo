@@ -21,14 +21,15 @@ type Props = {
 };
 
 type VillageItem = {
-  village_name: string;
+  village: string;
   total_population: number;
-  total_households: number;
+  number_of_households: number;
   sex_ratio_percent: number;
   literates_total_percent: number;
   state_slug: string;
   district_slug: string;
   tehsil_slug: string;
+  village_slug: string;
 };
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
@@ -186,14 +187,15 @@ export default async function TehsilPage({ params }: Props) {
   ];
 
   const villageData = villagesData?.map((item) => ({
-    name: item.village_name,
+    name: item.village,
     population: item.total_population,
-    total: item.total_households,
+    total: item.number_of_households,
     sex_ratio: item.sex_ratio_percent,
     literacy_rate: item.literates_total_percent,
     state_slug: item.state_slug,
     district_slug: item.district_slug,
     tehsil_slug: item.tehsil_slug,
+    village_slug: item.village_slug,
   }));
 
   // TODO: replace with real API data
