@@ -33,7 +33,7 @@ export async function GET(req) {
       const districts = await District.find({ state_slug })
         .sort({ district: 1 })
         .select(
-          "district district_slug total_population total_tehsils state_slug",
+          "district district_slug total_population total_tehsils state_slug sex_ratio_percent literates_total_percent",
         )
         .lean();
 

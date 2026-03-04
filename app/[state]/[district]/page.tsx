@@ -27,6 +27,10 @@ type TehsilItem = {
   tehsil_slug: string;
   total_population: number;
   total_villages: number;
+  sex_ratio_percent: number;
+  literates_total_percent: number;
+  state_slug: string;
+  district_slug: string;
 };
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
@@ -229,8 +233,11 @@ export default async function DistrictPage({ params }: Props) {
     name: item.tehsil,
     population: item.total_population,
     total: item.total_villages,
-    sex_ratio: null, // TODO: add when available in API
-    literacy_rate: null, // TODO: add when available in API
+    sex_ratio: item?.sex_ratio_percent,
+    literacy_rate: item?.literates_total_percent,
+    state_slug: item?.state_slug,
+    district_slug: item?.district_slug,
+    tehsil_slug: item?.tehsil_slug,
   }));
 
   // TODO: replace with real API data

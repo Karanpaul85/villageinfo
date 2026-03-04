@@ -29,8 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }),
   ]);
 
-  const defaultTitle = `${tehsilsData?.block_tehsil} Tehsil, ${tehsilsData?.district}, ${tehsilsData?.state} – Villages List, Population and Census`;
-  const defaultDescription = `${tehsilsData?.block_tehsil} is a tehsil in ${tehsilsData?.district} district of ${tehsilsData?.state}. This page provides tehsil-level statistics including total villages, population data and literacy rates.`;
+  const defaultTitle = tehsilsData?.seo_title;
+  const defaultDescription = tehsilsData?.seo_description;
 
   const title =
     !content?.error && content?.title ? content.title : defaultTitle;
@@ -44,10 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     openGraph: {
       title,
-      description:
-        !content?.error && content?.description
-          ? content.description
-          : `${tehsilsData?.block_tehsil} is a tehsil in ${tehsilsData?.district} district of ${tehsilsData?.state}. Explore villages, population and census data.`,
+      description,
     },
   };
 }
@@ -533,7 +530,6 @@ export default async function TehsilPage({ params }: Props) {
       {content.bottom_content && (
         <HtmlContent type="bottom" content={content.bottom_content} />
       )}
-      {console.log(tehsilsData)}
       {/** all state link */}
       <div className="flex flex-wrap items-center mt-8 text-sm gap-2 w-full  border border-gray-200 rounded-lg p-4 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
         Explore more:{" "}

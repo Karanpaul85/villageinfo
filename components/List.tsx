@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type ListType = "state" | "district" | "tehsil";
 
 type ListItem = {
@@ -6,6 +8,9 @@ type ListItem = {
   total: number | null;
   sex_ratio: number | null;
   literacy_rate: number | null;
+  state_slug?: string; // optional — only needed when rows are links
+  district_slug?: string;
+  tehsil_slug?: string;
 };
 
 type Props = {
@@ -56,7 +61,13 @@ export default function List({ type, heading, data }: Props) {
             {data?.map((item, index) => (
               <tr className="text-left" key={item.name}>
                 <TD>{index + 1}</TD>
-                <TD>{item.name}</TD>
+                <TD>
+                  <Link
+                    href={`/${item?.state_slug}/${item?.district_slug}/${item?.tehsil_slug}`}
+                  >
+                    {item.name}
+                  </Link>
+                </TD>
                 <TD>{item.population}</TD>
                 <TD>{item.total}</TD>
                 <TD>{item.sex_ratio}</TD>

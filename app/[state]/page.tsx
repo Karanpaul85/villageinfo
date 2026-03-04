@@ -29,6 +29,8 @@ type District = {
   state_slug: string;
   total_tehsils: number;
   total_population: number;
+  sex_ratio_percent: number;
+  literates_total_percent: number;
 };
 
 // ─── Metadata ────────────────────────────────────────────────────────────────
@@ -205,8 +207,10 @@ export default async function StatePage({ params }: Props) {
     name: item.district,
     population: item.total_population,
     total: item.total_tehsils,
-    sex_ratio: null, // TODO: add when available in API
-    literacy_rate: null, // TODO: add when available in API
+    sex_ratio: item?.sex_ratio_percent,
+    literacy_rate: item?.literates_total_percent,
+    district_slug: item?.district_slug,
+    state_slug: item?.state_slug,
   }));
 
   const { state: stateName, census_year } = stateData;
