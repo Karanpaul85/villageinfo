@@ -19,10 +19,10 @@ export default function Workers({ heading, data }: WorkersProps) {
   return (
     <div className="flex w-full mt-8 flex-col">
       <div className="flex gap-4 mb-2.5 items-center justify-between">
-        <h2 className="text-lg md:text-2xl font-bold flex w-fit whitespace-nowrap">
+        <h2 className="text-lg md:text-2xl font-bold flex w-fit md:whitespace-nowrap">
           Workers in {heading}
         </h2>
-        <span className="flex h-px bg-[#e2e8f0] w-full" />
+        <span className="md:flex hidden h-px bg-[#e2e8f0] w-full" />
       </div>
 
       <div className="flex w-full flex-wrap rounded-lg overflow-hidden border border-gray-200">

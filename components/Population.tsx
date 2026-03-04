@@ -26,10 +26,10 @@ export default function Population({
   return (
     <div className="flex w-full mt-8 flex-col">
       <div className="flex gap-4 mb-2.5 items-center justify-between">
-        <h2 className="text-lg md:text-2xl font-bold flex w-fit whitespace-nowrap">
+        <h2 className="text-lg md:text-2xl font-bold flex w-fit md:whitespace-nowrap">
           Population of {heading} - (Census {year})
         </h2>
-        <span className="flex h-px bg-[#e2e8f0] w-full" />
+        <span className="md:flex hidden h-px bg-[#e2e8f0] w-full" />
       </div>
 
       <div className="flex w-full gap-4 flex-wrap">
@@ -78,7 +78,7 @@ export default function Population({
                     <div className="w-1/2 text-sm text-[#64748b] capitalize p-3 bg-[#f8fafc]">
                       {item.label}
                     </div>
-                    <div className="w-1/2 text-sm text-[#0f172a] capitalize p-3 font-bold flex gap-2">
+                    <div className="w-1/2 text-sm text-[#0f172a] capitalize p-3 font-bold flex gap-2 flex-wrap">
                       {item.value ?? "-"}
                       <span className="text-xs font-light text-[#64748b]">
                         females per 1,000 males
