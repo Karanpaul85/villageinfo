@@ -11,11 +11,23 @@ export async function GET(req) {
     const hasParams = searchParams.toString().length > 0;
 
     if (hasParams) {
-      // Build filter from query parameters
       const filter = {};
+      let limit = null;
+
       searchParams.forEach((value, key) => {
-        filter[key] = value;
+        if (key === "limit") limit = parseInt(value);
+        else filter[key] = value;
       });
+
+      // limit with no other filters → return top N states (name + slug only)
+      if (limit && Object.keys(filter).length === 0) {
+        const states = await State.find()
+          .sort({ name: 1 })
+          .limit(limit)
+          .select("state state_slug")
+          .lean();
+        return NextResponse.json({ allStates: states }, { status: 200 });
+      }
 
       const state = await State.findOne(filter).lean();
 

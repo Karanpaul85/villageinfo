@@ -1,6 +1,6 @@
 import { getContent, getDistricts, getStates } from "@/utils/common";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import HtmlContent from "@/components/htmlContent";
 import BlogSection from "@/components/BlogSection";
 import TopLeft from "@/components/TopLeft";
@@ -62,10 +62,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function StatePage({ params }: Props) {
   const { state } = await params;
 
-  const [content, stateData, districts] = await Promise.all([
+  const [
+    content,
+    stateData,
+    districts,
+    allStates,
+    topPopDistricts,
+    topLitDistricts,
+  ] = await Promise.all([
     getContent("state", { state_slug: state }),
     getStates({ state_slug: state }),
     getDistricts({ state_slug: state }) as Promise<District[]>,
+    getStates({ limit: 5 }),
+    getDistricts({ state_slug: state, limit: 5, sortBy: "population" }),
+    getDistricts({ state_slug: state, limit: 5, sortBy: "literate" }),
   ]);
 
   if (!stateData || stateData?.status === 404) notFound();
@@ -220,16 +230,28 @@ export default async function StatePage({ params }: Props) {
     { label: stateName, redirectionUrl: null },
   ];
 
-  const topPopulatedDistricts = [
-    { name: "Kaithal", redirectionUrl: "/" },
-    { name: "Kaithal", redirectionUrl: "/" },
-    { name: "Kaithal", redirectionUrl: "/" },
-    { name: "Kaithal", redirectionUrl: "/" },
-    { name: "Kaithal", redirectionUrl: "/" },
-    { name: "Kaithal", redirectionUrl: "/" },
-    { name: `View All States`, redirectionUrl: "/" },
+  const topStates = [
+    ...(allStates ?? []).map((item: { state: string; state_slug: string }) => ({
+      name: item.state,
+      redirectionUrl: item.state_slug,
+    })),
+    { name: "View All States", redirectionUrl: "/" },
   ];
 
+  // Replace the hardcoded topPopulatedDistricts with real data
+  const topPopulatedDistricts = [
+    ...(topPopDistricts ?? []).map((item: District) => ({
+      name: item.district,
+      redirectionUrl: `/${item.state_slug}/${item.district_slug}`,
+    })),
+  ];
+
+  const topLiterateDistricts = [
+    ...(topLitDistricts ?? []).map((item: District) => ({
+      name: item.district,
+      redirectionUrl: `/${item.state_slug}/${item.district_slug}`,
+    })),
+  ];
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
@@ -287,10 +309,15 @@ export default async function StatePage({ params }: Props) {
             heading="Total Population"
             value={stateData.total_population}
           />
-          <TopChip heading="Sex Ratio" value={stateData.sex_ratio_percent} />
+          <TopChip
+            heading="Sex Ratio"
+            value={stateData.sex_ratio_percent}
+            isShowPercent
+          />
           <TopChip
             heading="Literacy Rate"
             value={stateData.literates_total_percent}
+            isShowPercent
           />
           <TopChip heading="Districts" value={stateData.total_districts} />
           <TopChip heading="Villages" value={stateData.total_villages} />
@@ -323,12 +350,9 @@ export default async function StatePage({ params }: Props) {
           />
           <PopularList
             heading={`Top Literate ${stateName} Districts`}
-            listData={topPopulatedDistricts}
+            listData={topLiterateDistricts}
           />
-          <PopularList
-            heading={`Explore Other States`}
-            listData={topPopulatedDistricts}
-          />
+          <PopularList heading={`Explore Other States`} listData={topStates} />
         </div>
       </div>
 

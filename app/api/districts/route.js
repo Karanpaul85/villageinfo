@@ -28,6 +28,27 @@ export async function GET(req) {
       return NextResponse.json(district, { status: 200 });
     }
 
+    // Case 2b: state_slug + limit + sortBy → return top N districts sorted by field
+    if (state_slug && searchParams.get("limit")) {
+      const limit = parseInt(searchParams.get("limit"));
+      const sortBy = searchParams.get("sortBy");
+
+      const sortMap = {
+        population: { total_population: -1 },
+        literate: { literates_total_percent: -1 },
+      };
+
+      const sortQuery = sortMap[sortBy] ?? { district: 1 };
+
+      const districts = await District.find({ state_slug })
+        .sort(sortQuery)
+        .limit(limit)
+        .select("district district_slug")
+        .lean();
+
+      return NextResponse.json({ allDistricts: districts }, { status: 200 });
+    }
+
     // Case 2: Only state_slug provided → return all districts for that state
     if (state_slug) {
       const districts = await District.find({ state_slug })

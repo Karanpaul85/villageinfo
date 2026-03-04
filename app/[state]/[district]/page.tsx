@@ -327,10 +327,12 @@ export default async function DistrictPage({ params }: Props) {
             <TopChip
               heading="Sex Ratio"
               value={districtData.sex_ratio_percent}
+              isShowPercent
             />
             <TopChip
               heading="Literacy Rate"
               value={districtData.literates_total_percent}
+              isShowPercent
             />
             <TopChip
               heading="Total Tehsils"

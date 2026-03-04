@@ -267,10 +267,15 @@ export default async function TehsilPage({ params }: Props) {
             heading="Total Population"
             value={tehsilData.total_population}
           />
-          <TopChip heading="Sex Ratio" value={tehsilData.sex_ratio_percent} />
+          <TopChip
+            heading="Sex Ratio"
+            value={tehsilData.sex_ratio_percent}
+            isShowPercent
+          />
           <TopChip
             heading="Literacy Rate"
             value={tehsilData.literates_total_percent}
+            isShowPercent
           />
           <TopChip heading="Total Villages" value={tehsilData.total_villages} />
           <TopChip
