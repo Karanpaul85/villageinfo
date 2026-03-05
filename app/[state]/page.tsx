@@ -361,7 +361,7 @@ export default async function StatePage({ params }: Props) {
           )}
           {topStates?.length > 0 && (
             <PopularList
-              heading={`Explore Other States 1`}
+              heading={`Explore Other States `}
               listData={topStates}
             />
           )}
