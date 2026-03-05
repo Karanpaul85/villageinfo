@@ -15,6 +15,7 @@ import List from "@/components/List";
 import About from "@/components/About";
 import PopularList from "@/components/PopularList";
 import DistrictSchema from "@/components/Districtschema";
+import WeatherWidget from "@/components/WeatherWidget";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -396,6 +397,10 @@ export default async function DistrictPage({ params }: Props) {
 
         <div className="flex w-full gap-4 mt-4 flex-wrap md:flex-nowrap">
           <div className="w-full md:w-2/3">
+            <WeatherWidget
+              latitude={districtData.latitude}
+              longitude={districtData.longitude}
+            />
             <Administrative heading={districtName} data={adminData} />
             <Population
               heading={districtName}

@@ -115,38 +115,7 @@ function WeatherSkeleton() {
     </div>
   );
 }
-// function WeatherSkeleton() {
-//   return (
-//     <div
-//       className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 w-full flex items-center justify-center"
-//       style={{ minHeight: "inherit", height: "100%" }}
-//     >
-//       <div className="relative w-32 h-24">
-//         {/* Sun */}
-//         <div className="absolute top-0 left-0 animate-spin [animation-duration:8s]">
-//           <div className="w-12 h-12 rounded-full bg-yellow-300 shadow-[0_0_24px_8px_rgba(253,224,71,0.5)]" />
-//         </div>
 
-//         {/* Cloud 1 (main) */}
-//         <div className="absolute bottom-0 right-0 animate-[bounce_3s_ease-in-out_infinite]">
-//           <div className="relative">
-//             <div className="w-16 h-7 bg-gray-200 rounded-full" />
-//             <div className="absolute -top-4 left-2 w-9 h-9 bg-gray-200 rounded-full" />
-//             <div className="absolute -top-3 left-8 w-7 h-7 bg-gray-200 rounded-full" />
-//           </div>
-//         </div>
-
-//         {/* Cloud 2 (small, behind) */}
-//         <div className="absolute bottom-2 left-6 animate-[bounce_4s_ease-in-out_infinite_0.8s] opacity-50">
-//           <div className="relative">
-//             <div className="w-10 h-5 bg-gray-100 rounded-full" />
-//             <div className="absolute -top-3 left-2 w-6 h-6 bg-gray-100 rounded-full" />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 export default function WeatherWidget({
   latitude,
   longitude,
