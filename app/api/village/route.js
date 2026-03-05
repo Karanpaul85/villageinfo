@@ -30,17 +30,20 @@ export async function GET(req) {
         literate: { literates_total_percent: -1 },
       };
 
-      const sortQuery = sortMap[sortBy] ?? { tehsil: 1 };
-
-      const villages = await Village.find({
+      let query = Village.find({
         state_slug,
         district_slug,
         tehsil_slug: block_slug,
       })
-        .sort(sortQuery)
         .limit(limit)
-        .select("village village_slug state_slug district_slug tehsil_slug")
-        .lean();
+        .select("village village_slug state_slug district_slug tehsil_slug");
+
+      // Only apply sort if sortBy is provided
+      if (sortBy && sortMap[sortBy]) {
+        query = query.sort(sortMap[sortBy]);
+      }
+
+      const villages = await query.lean();
 
       return NextResponse.json({ allVillages: villages }, { status: 200 });
     }
