@@ -7,9 +7,11 @@ import List from "@/components/List";
 import Literacy from "@/components/Literacy";
 import PopularList from "@/components/PopularList";
 import Population from "@/components/Population";
+import TehsilSchema from "@/components/TehsilSchema";
 import TopChip from "@/components/TopChip";
 import TopLeft from "@/components/TopLeft";
 import Workers from "@/components/Workers";
+import { HOST } from "@/lib/constants/constants";
 import { getContent, getTehsils, getVillages } from "@/utils/common";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -68,7 +70,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ? content.description
       : tehsilData?.seo_description;
 
-  return { title, description, openGraph: { title, description } };
+  return {
+    title,
+    description,
+    openGraph: { title, description },
+    alternates: {
+      canonical: `${HOST}/${state}/${district}/${tehsil}`,
+    },
+  };
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -259,116 +268,132 @@ export default async function TehsilPage({ params }: Props) {
   // ─── Render ───────────────────────────────────────────────────────────────────
 
   return (
-    <main className="flex w-full md:max-w-275 m-auto p-4 flex-wrap">
-      <Breadcrumb data={breadcrumbData} />
+    <>
+      <TehsilSchema
+        d={tehsilData}
+        state_slug={state}
+        district_slug={district}
+        villages={villagesData}
+      />
+      <main className="flex w-full md:max-w-275 m-auto p-4 flex-wrap">
+        <Breadcrumb data={breadcrumbData} />
 
-      <div className="flex w-full flex-col border gap-4 border-gray-200 rounded-2xl bg-linear-to-b from-slate-50 to-white p-4.5 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
-        <div className="flex w-full flex-wrap gap-4 md:flex-nowrap">
-          <div className="flex w-full md:w-2/3 flex-col gap-4">
-            <h1 className="text-lg md:text-2xl font-bold">
-              {tehsilName} - Population, Sex Ratio &amp; Literacy Rate
-            </h1>
+        <div className="flex w-full flex-col border gap-4 border-gray-200 rounded-2xl bg-linear-to-b from-slate-50 to-white p-4.5 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
+          <div className="flex w-full flex-wrap gap-4 md:flex-nowrap">
+            <div className="flex w-full md:w-2/3 flex-col gap-4">
+              <h1 className="text-lg md:text-2xl font-bold">
+                {tehsilName} - Population, Sex Ratio &amp; Literacy Rate
+              </h1>
 
-            {content.top_content ? (
-              <HtmlContent
-                type="top"
-                content={content.top_content}
-                customClass="mb-0"
-              />
-            ) : (
-              <>
-                <p className="text-slate-700 text-sm">
-                  {tehsilName} is a tehsil in {tehsilData.district} district,{" "}
-                  {tehsilData.state}, {tehsilData.country}, with{" "}
-                  {tehsilData.total_villages} villages. As per Census{" "}
-                  {census_year}, the total population is{" "}
-                  {tehsilData.total_population}, sex ratio is{" "}
-                  {tehsilData.sex_ratio_percent} females per 1,000 males, and
-                  the overall literacy rate is{" "}
-                  {tehsilData.literates_total_percent}%.
-                </p>
-                <p className="text-slate-700 text-sm p-2 border border-gray-200 rounded-md bg-gray-100">
-                  ℹ️ Source: Office of the Registrar General &amp; Census
-                  Commissioner, India — Census {census_year}
-                </p>
-              </>
-            )}
+              {content.top_content ? (
+                <HtmlContent
+                  type="top"
+                  content={content.top_content}
+                  customClass="mb-0"
+                />
+              ) : (
+                <>
+                  <p className="text-slate-700 text-sm">
+                    {tehsilName} is a tehsil in {tehsilData.district} district,{" "}
+                    {tehsilData.state}, {tehsilData.country}, with{" "}
+                    {tehsilData.total_villages} villages. As per Census{" "}
+                    {census_year}, the total population is{" "}
+                    {tehsilData.total_population}, sex ratio is{" "}
+                    {tehsilData.sex_ratio_percent} females per 1,000 males, and
+                    the overall literacy rate is{" "}
+                    {tehsilData.literates_total_percent}%.
+                  </p>
+                  <p className="text-slate-700 text-sm p-2 border border-gray-200 rounded-md bg-gray-100">
+                    ℹ️ Source: Office of the Registrar General &amp; Census
+                    Commissioner, India — Census {census_year}
+                  </p>
+                </>
+              )}
+            </div>
+
+            <TopLeft
+              title="Tehsil at a Glance"
+              subHeading={tehsilName}
+              data={[
+                { label: "District", value: tehsilData.district },
+                { label: "State", value: tehsilData.state },
+                { label: "Country", value: tehsilData.country },
+                {
+                  label: "Area",
+                  value: `${tehsilData.total_area_sq_km} sq km`,
+                },
+                { label: "Tehsil Code", value: tehsilData.tehsil_id },
+                { label: "Census Year", value: census_year },
+              ]}
+            />
           </div>
 
-          <TopLeft
-            title="Tehsil at a Glance"
-            subHeading={tehsilName}
-            data={[
-              { label: "District", value: tehsilData.district },
-              { label: "State", value: tehsilData.state },
-              { label: "Country", value: tehsilData.country },
-              { label: "Area", value: `${tehsilData.total_area_sq_km} sq km` },
-              { label: "Tehsil Code", value: tehsilData.tehsil_id },
-              { label: "Census Year", value: census_year },
-            ]}
-          />
+          <div className="flex w-full gap-4 flex-wrap md:flex-nowrap">
+            <TopChip
+              heading="Total Population"
+              value={tehsilData.total_population}
+            />
+            <TopChip
+              heading="Sex Ratio"
+              value={tehsilData.sex_ratio_percent}
+              isShowPercent
+            />
+            <TopChip
+              heading="Literacy Rate"
+              value={tehsilData.literates_total_percent}
+              isShowPercent
+            />
+            <TopChip
+              heading="Total Villages"
+              value={tehsilData.total_villages}
+            />
+            <TopChip
+              heading="Households"
+              value={tehsilData.number_of_households}
+            />
+            <TopChip heading="Area" value={tehsilData.total_area_sq_km} />
+          </div>
         </div>
 
-        <div className="flex w-full gap-4 flex-wrap md:flex-nowrap">
-          <TopChip
-            heading="Total Population"
-            value={tehsilData.total_population}
-          />
-          <TopChip
-            heading="Sex Ratio"
-            value={tehsilData.sex_ratio_percent}
-            isShowPercent
-          />
-          <TopChip
-            heading="Literacy Rate"
-            value={tehsilData.literates_total_percent}
-            isShowPercent
-          />
-          <TopChip heading="Total Villages" value={tehsilData.total_villages} />
-          <TopChip
-            heading="Households"
-            value={tehsilData.number_of_households}
-          />
-          <TopChip heading="Area" value={tehsilData.total_area_sq_km} />
-        </div>
-      </div>
+        <div className="flex w-full gap-4 mt-4 flex-wrap md:flex-nowrap">
+          <div className="w-full md:w-2/3">
+            <Administrative heading={tehsilName} data={adminData} />
+            <Population
+              heading={tehsilName}
+              year={census_year}
+              overAllPopulation={overAllPopulation}
+              childrenPopulation={childrenPopulation}
+              scStPopulation={scStPopulation}
+            />
+            <Literacy heading={tehsilName} data={literacyData} />
+            <Workers heading={tehsilName} data={workerData} />
+            <List type="tehsil" heading={tehsilName} data={villageData} />
+          </div>
 
-      <div className="flex w-full gap-4 mt-4 flex-wrap md:flex-nowrap">
-        <div className="w-full md:w-2/3">
-          <Administrative heading={tehsilName} data={adminData} />
-          <Population
-            heading={tehsilName}
-            year={census_year}
-            overAllPopulation={overAllPopulation}
-            childrenPopulation={childrenPopulation}
-            scStPopulation={scStPopulation}
-          />
-          <Literacy heading={tehsilName} data={literacyData} />
-          <Workers heading={tehsilName} data={workerData} />
-          <List type="tehsil" heading={tehsilName} data={villageData} />
+          <div className="w-full md:w-1/3 flex flex-col gap-4">
+            <About type="tehsil" name={tehsilName} />
+            <PopularList
+              heading={`Top Populated ${tehsilName} Villages`}
+              listData={topPopulatesVillages}
+            />
+            <PopularList
+              heading={`Top Literate ${tehsilName} Villages`}
+              listData={topLitVillages}
+            />
+            <PopularList
+              heading="Explore Other Tehsils"
+              listData={otherTehsils}
+            />
+          </div>
         </div>
 
-        <div className="w-full md:w-1/3 flex flex-col gap-4">
-          <About type="tehsil" name={tehsilName} />
-          <PopularList
-            heading={`Top Populated ${tehsilName} Villages`}
-            listData={topPopulatesVillages}
-          />
-          <PopularList
-            heading={`Top Literate ${tehsilName} Villages`}
-            listData={topLitVillages}
-          />
-          <PopularList
-            heading="Explore Other Tehsils"
-            listData={otherTehsils}
-          />
-        </div>
-      </div>
-
-      {content?.blog_content && <BlogSection blogData={content.blog_content} />}
-      {content?.bottom_content && (
-        <HtmlContent type="bottom" content={content.bottom_content} />
-      )}
-    </main>
+        {content?.blog_content && (
+          <BlogSection blogData={content.blog_content} />
+        )}
+        {content?.bottom_content && (
+          <HtmlContent type="bottom" content={content.bottom_content} />
+        )}
+      </main>
+    </>
   );
 }

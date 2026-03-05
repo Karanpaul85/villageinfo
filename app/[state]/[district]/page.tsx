@@ -16,6 +16,7 @@ import About from "@/components/About";
 import PopularList from "@/components/PopularList";
 import DistrictSchema from "@/components/Districtschema";
 import WeatherWidget from "@/components/WeatherWidget";
+import { HOST } from "@/lib/constants/constants";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -66,6 +67,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     openGraph: { title, description },
+    alternates: {
+      canonical: `${HOST}/${state}/${district}`,
+    },
   };
 }
 
