@@ -15,6 +15,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import About from "@/components/About";
 import PopularList from "@/components/PopularList";
 import StateSchema from "@/components/Stateschema";
+import { HOST } from "@/lib/constants/constants";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -54,6 +55,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     openGraph: { title, description },
+    alternates: {
+      canonical: `${HOST}/${state}`,
+    },
   };
 }
 

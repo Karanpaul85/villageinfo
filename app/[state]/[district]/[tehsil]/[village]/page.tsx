@@ -15,6 +15,8 @@ import { getContent, getVillages } from "@/utils/common";
 import { Metadata } from "next";
 import { cache } from "react";
 import { notFound } from "next/navigation";
+import { HOST } from "@/lib/constants/constants";
+import VillageSchema from "@/components/VillageSchema";
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -129,7 +131,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = content?.title || villagesData?.seo_title;
   const description = content?.description || villagesData?.seo_description;
 
-  return { title, description, openGraph: { title, description } };
+  return {
+    title,
+    description,
+    openGraph: { title, description },
+    alternates: {
+      canonical: `${HOST}/${state}/${district}/${tehsil}/${village}`,
+    },
+  };
 }
 
 // ────────────────────────────────────────────────────────────
@@ -282,110 +291,121 @@ export default async function VillagePage({ params }: Props) {
   ];
 
   return (
-    <main className="flex w-full md:max-w-275 m-auto p-4 flex-wrap">
-      <Breadcrumb data={breadcrumbData} />
+    <>
+      <VillageSchema
+        v={villagesData}
+        state_slug={state}
+        district_slug={district}
+        tehsil_slug={tehsil}
+      />
+      <main className="flex w-full md:max-w-275 m-auto p-4 flex-wrap">
+        <Breadcrumb data={breadcrumbData} />
 
-      <div className="flex w-full flex-col border gap-4 border-gray-200 rounded-2xl bg-linear-to-b from-slate-50 to-white p-4.5 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
-        <div className="flex w-full flex-wrap gap-4 md:flex-nowrap">
-          <div className="flex w-full md:w-2/3 flex-col gap-4">
-            <h1 className="text-lg md:text-2xl font-bold">
-              {v.village} Village Population, Sex Ratio & Literacy Rate
-            </h1>
+        <div className="flex w-full flex-col border gap-4 border-gray-200 rounded-2xl bg-linear-to-b from-slate-50 to-white p-4.5 shadow-[0_6px_18px_rgba(15,23,42,0.05)]">
+          <div className="flex w-full flex-wrap gap-4 md:flex-nowrap">
+            <div className="flex w-full md:w-2/3 flex-col gap-4">
+              <h1 className="text-lg md:text-2xl font-bold">
+                {v.village} Village Population, Sex Ratio & Literacy Rate
+              </h1>
 
-            {content.top_content ? (
-              <HtmlContent
-                type="top"
-                content={content.top_content}
-                customClass="mb-0"
-              />
-            ) : (
-              <>
-                <p className="text-slate-700 text-sm">
-                  {v.village} is a village in {v.tehsil} tehsil, {v.district}{" "}
-                  district, {v.state}, {v.country}. As per Census{" "}
-                  {v.census_year}, the total population is {v.total_population},
-                  sex ratio is {v.sex_ratio_percent} females per 1,000 males,
-                  and the overall literacy rate is {v.literates_total_percent}%.
-                  The PIN code of {v.village} is {v.pin_code}.
-                </p>
-                <p className="text-slate-700 text-sm p-2 border border-gray-200 rounded-md bg-gray-100">
-                  ℹ️ Source: Office of the Registrar General &amp; Census
-                  Commissioner, India — Census {v.census_year}
-                </p>
-              </>
-            )}
+              {content.top_content ? (
+                <HtmlContent
+                  type="top"
+                  content={content.top_content}
+                  customClass="mb-0"
+                />
+              ) : (
+                <>
+                  <p className="text-slate-700 text-sm">
+                    {v.village} is a village in {v.tehsil} tehsil, {v.district}{" "}
+                    district, {v.state}, {v.country}. As per Census{" "}
+                    {v.census_year}, the total population is{" "}
+                    {v.total_population}, sex ratio is {v.sex_ratio_percent}{" "}
+                    females per 1,000 males, and the overall literacy rate is{" "}
+                    {v.literates_total_percent}%. The PIN code of {v.village} is{" "}
+                    {v.pin_code}.
+                  </p>
+                  <p className="text-slate-700 text-sm p-2 border border-gray-200 rounded-md bg-gray-100">
+                    ℹ️ Source: Office of the Registrar General &amp; Census
+                    Commissioner, India — Census {v.census_year}
+                  </p>
+                </>
+              )}
+            </div>
+
+            <TopLeft
+              title="Village at a Glance"
+              subHeading={v.village}
+              data={[
+                { label: "Tehsil", value: v.tehsil },
+                { label: "District", value: v.district },
+                { label: "State", value: v.state },
+                { label: "PIN Code", value: v.pin_code },
+                { label: "Nearest Town", value: v.nearest_town },
+                { label: "Main Occupation", value: v.main_occupation },
+                { label: "Census Year", value: v.census_year },
+              ]}
+            />
           </div>
 
-          <TopLeft
-            title="Village at a Glance"
-            subHeading={v.village}
-            data={[
-              { label: "Tehsil", value: v.tehsil },
-              { label: "District", value: v.district },
-              { label: "State", value: v.state },
-              { label: "PIN Code", value: v.pin_code },
-              { label: "Nearest Town", value: v.nearest_town },
-              { label: "Main Occupation", value: v.main_occupation },
-              { label: "Census Year", value: v.census_year },
-            ]}
-          />
+          <div className="flex w-full gap-4 flex-wrap md:flex-nowrap">
+            <TopChip heading="Total Population" value={v.total_population} />
+            <TopChip
+              heading="Sex Ratio"
+              value={v.sex_ratio_percent}
+              isShowPercent
+            />
+            <TopChip
+              heading="Literacy Rate"
+              value={v.literates_total_percent}
+              isShowPercent
+            />
+            <TopChip heading="Households" value={v.number_of_households} />
+            <TopChip heading="Area" value={v.total_area_sq_km} />
+          </div>
         </div>
 
-        <div className="flex w-full gap-4 flex-wrap md:flex-nowrap">
-          <TopChip heading="Total Population" value={v.total_population} />
-          <TopChip
-            heading="Sex Ratio"
-            value={v.sex_ratio_percent}
-            isShowPercent
-          />
-          <TopChip
-            heading="Literacy Rate"
-            value={v.literates_total_percent}
-            isShowPercent
-          />
-          <TopChip heading="Households" value={v.number_of_households} />
-          <TopChip heading="Area" value={v.total_area_sq_km} />
-        </div>
-      </div>
+        <div className="flex w-full gap-4 mt-4 flex-wrap md:flex-nowrap">
+          <div className="w-full md:w-2/3">
+            <Map
+              heading={v.village}
+              lat={v.latitude}
+              long={v.longitude}
+              nearest_town={v.nearest_town}
+            />
+            <Administrative heading={v.village} data={adminData} />
+            <Amenities heading={v.village} data={amenitiesData} />
+            <Population
+              heading={v.village}
+              year={v.census_year}
+              overAllPopulation={overAllPopulation}
+              childrenPopulation={childrenPopulation}
+              scStPopulation={scStPopulation}
+            />
+            <Literacy heading={v.village} data={literacyData} />
+            <Workers heading={v.village} data={workerData} />
+          </div>
 
-      <div className="flex w-full gap-4 mt-4 flex-wrap md:flex-nowrap">
-        <div className="w-full md:w-2/3">
-          <Map
-            heading={v.village}
-            lat={v.latitude}
-            long={v.longitude}
-            nearest_town={v.nearest_town}
-          />
-          <Administrative heading={v.village} data={adminData} />
-          <Amenities heading={v.village} data={amenitiesData} />
-          <Population
-            heading={v.village}
-            year={v.census_year}
-            overAllPopulation={overAllPopulation}
-            childrenPopulation={childrenPopulation}
-            scStPopulation={scStPopulation}
-          />
-          <Literacy heading={v.village} data={literacyData} />
-          <Workers heading={v.village} data={workerData} />
+          <div className="w-full md:w-1/3 flex flex-col gap-4">
+            <About type="village" name={v.village} />
+            <PopularList
+              heading="Explore Other Villages"
+              listData={tehsilVillages}
+            />
+            <PopularList
+              heading={`Go to ${v.village}`}
+              listData={villageTopLinks}
+            />
+          </div>
         </div>
 
-        <div className="w-full md:w-1/3 flex flex-col gap-4">
-          <About type="village" name={v.village} />
-          <PopularList
-            heading="Explore Other Villages"
-            listData={tehsilVillages}
-          />
-          <PopularList
-            heading={`Go to ${v.village}`}
-            listData={villageTopLinks}
-          />
-        </div>
-      </div>
-
-      {content?.blog_content && <BlogSection blogData={content.blog_content} />}
-      {content?.bottom_content && (
-        <HtmlContent type="bottom" content={content.bottom_content} />
-      )}
-    </main>
+        {content?.blog_content && (
+          <BlogSection blogData={content.blog_content} />
+        )}
+        {content?.bottom_content && (
+          <HtmlContent type="bottom" content={content.bottom_content} />
+        )}
+      </main>
+    </>
   );
 }
