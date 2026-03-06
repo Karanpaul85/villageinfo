@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Script from "next/script";
 import { SessionProvider } from "next-auth/react";
+import NotificationBell from "@/components/NotificationBell";
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
@@ -49,6 +50,7 @@ export default function RootLayout({
         </noscript>
 
         <SessionProvider refetchInterval={60} refetchOnWindowFocus>
+          <NotificationBell />
           <Header />
           {children}
           <Footer />

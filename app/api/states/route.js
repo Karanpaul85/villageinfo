@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import State from "@/lib/models/State";
+import Subscription from "@/lib/models/subscription";
+import { broadcastPushNotification } from "@/lib/webpush";
 import { revalidateTag } from "next/cache";
 
 export async function GET(req) {
@@ -78,6 +80,12 @@ export async function POST(req) {
       // Don't touch numbers, even if they're 0
     });
 
+    // Check if this is a NEW state (upsert will create) or an update
+    const existingState = await State.findOne({
+      state_id: body.state_id,
+    }).lean();
+    const isNewState = !existingState;
+
     const state = await State.findOneAndUpdate(
       { state_id: body.state_id },
       { $set: body },
@@ -90,6 +98,48 @@ export async function POST(req) {
     );
     // ✅ Clear cache after successful update
     revalidateTag("states", "max");
+
+    // ✅ Send push notifications only when a NEW state is created
+    if (isNewState) {
+      try {
+        const subscriptions = await Subscription.find().lean();
+
+        if (subscriptions.length > 0) {
+          const stateName = body.state || "a new state";
+          const stateSlug = body.state_slug || "";
+
+          const { sent, failed, expiredEndpoints } =
+            await broadcastPushNotification(subscriptions, {
+              title: "🗺️ New State Added!",
+              body: `${stateName} has just been added. Tap to explore.`,
+              url: stateSlug ? `/${stateSlug}` : "/",
+              icon: "/icons/icon-192x192.png",
+              badge: "/icons/badge-72x72.png",
+              ...(body.image_url && {
+                image: body.image_url || `${HOST}/images/default-share.jpg`,
+              }),
+            });
+
+          console.log(
+            `Push notifications: ${sent} sent, ${failed} failed, ${expiredEndpoints.length} expired`,
+          );
+
+          // ✅ Clean up expired/invalid subscriptions automatically
+          if (expiredEndpoints.length > 0) {
+            await Subscription.deleteMany({
+              endpoint: { $in: expiredEndpoints },
+            });
+            console.log(
+              `Removed ${expiredEndpoints.length} expired subscriptions`,
+            );
+          }
+        }
+      } catch (notifError) {
+        // Don't fail the main request if notifications fail
+        console.error("Push notification error:", notifError);
+      }
+    }
+
     return NextResponse.json(state, { status: 201 });
   } catch (error) {
     console.error("POST /states error:", error);
