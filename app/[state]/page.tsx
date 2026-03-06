@@ -46,15 +46,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title =
     content?.title && !content?.error ? content.title : stateData?.seo_title;
+
   const description =
     content?.description && !content?.error
       ? content.description
       : stateData?.seo_description;
 
+  const image =
+    content?.image ||
+    stateData?.seo_image ||
+    `${HOST}/images/default-share.jpg`;
+
   return {
     title,
     description,
-    openGraph: { title, description },
+    openGraph: {
+      title,
+      description,
+      url: `${HOST}/${state}`,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
     alternates: {
       canonical: `${HOST}/${state}`,
     },
