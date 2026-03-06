@@ -115,9 +115,9 @@ export async function POST(req) {
               url: stateSlug ? `/${stateSlug}` : "/",
               icon: "/icons/icon-192x192.png",
               badge: "/icons/badge-72x72.png",
-              ...(body.image_url && {
-                image: body.image_url || `${HOST}/images/default-share.jpg`,
-              }),
+              image:
+                body.image_url ||
+                `${process.env.baseURL}/images/default-share.jpg`,
             });
 
           console.log(

@@ -34,9 +34,10 @@ self.addEventListener("push", (event) => {
     icon: icon || "/icons/icon-192x192.png",
     badge: badge || "/icons/badge-72x72.png",
     data: { url },
-    vibrate: [200, 100, 200],
-    requireInteraction: false,
-    ...(image && { image }), // ← only added if image exists in payload
+    silent: false, // ← explicitly not silent
+    renotify: true, // ← re-alerts even if same tag
+    tag: "new-state", // ← required for renotify to work
+    ...(image && { image }),
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
