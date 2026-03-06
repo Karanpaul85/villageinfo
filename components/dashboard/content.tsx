@@ -24,7 +24,7 @@ type FormField = keyof typeof initialFormState;
 type State = { _id: string; state: string; state_slug: string };
 type District = { _id: string; district: string; district_slug: string };
 type Tehsil = { _id: string; tehsil: string; tehsil_slug: string };
-type Village = { _id: string; village_name: string; village_slug: string };
+type Village = { _id: string; village: string; village_slug: string };
 
 const FIELDS: { name: FormField; label: string; type: string }[] = [
   { name: "title", label: "Title", type: "input" },
@@ -295,7 +295,7 @@ function ContentPage() {
 
   const editingLabel =
     activeTab === "Village"
-      ? selectedVillage?.village_name
+      ? selectedVillage?.village
       : activeTab === "Tehsil"
         ? selectedTehsil?.tehsil
         : activeTab === "District"
@@ -313,15 +313,15 @@ function ContentPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-4">Content Manager</h1>
+      <h1 className="mb-4 text-xl font-bold">Content Manager</h1>
 
       {/* Tabs */}
-      <div className="flex border-b mb-6">
+      <div className="mb-6 flex border-b">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-sm font-medium transition border-b-2 -mb-px cursor-pointer ${
+            className={`-mb-px cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition ${
               activeTab === tab
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -333,7 +333,7 @@ function ContentPage() {
       </div>
 
       {/* Cascading selectors */}
-      <div className="flex flex-wrap gap-4 mb-6">
+      <div className="mb-6 flex flex-wrap gap-4">
         {/* State */}
         {["State", "District", "Tehsil", "Village"].includes(activeTab) && (
           <div className="flex flex-col gap-1">
@@ -342,7 +342,7 @@ function ContentPage() {
               <p className="text-sm text-gray-400">Loading...</p>
             ) : (
               <select
-                className="border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-52"
+                className="w-52 rounded border p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 value={selectedState?.state_slug ?? ""}
                 onChange={(e) => {
                   setSelectedState(
@@ -373,7 +373,7 @@ function ContentPage() {
                 <p className="text-sm text-gray-400">Loading...</p>
               ) : (
                 <select
-                  className="border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-52"
+                  className="w-52 rounded border p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   value={selectedDistrict?.district_slug ?? ""}
                   onChange={(e) => {
                     setSelectedDistrict(
@@ -403,7 +403,7 @@ function ContentPage() {
               <p className="text-sm text-gray-400">Loading...</p>
             ) : (
               <select
-                className="border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-52"
+                className="w-52 rounded border p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 value={selectedTehsil?.tehsil_slug ?? ""}
                 onChange={(e) => {
                   setSelectedTehsil(
@@ -432,7 +432,7 @@ function ContentPage() {
               <p className="text-sm text-gray-400">Loading...</p>
             ) : (
               <select
-                className="border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-52"
+                className="w-52 rounded border p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 value={selectedVillage?.village_slug ?? ""}
                 onChange={(e) => {
                   setSelectedVillage(
@@ -445,7 +445,7 @@ function ContentPage() {
                 <option value="">-- Select Village --</option>
                 {villages.map((v) => (
                   <option key={v._id} value={v.village_slug}>
-                    {v.village_name}
+                    {v.village}
                   </option>
                 ))}
               </select>
@@ -462,7 +462,7 @@ function ContentPage() {
           ) : (
             <>
               {activeTab !== "Home" && (
-                <p className="text-sm text-blue-600 font-medium">
+                <p className="text-sm font-medium text-blue-600">
                   Editing: {editingLabel}
                 </p>
               )}
@@ -472,12 +472,12 @@ function ContentPage() {
                   <label className="text-sm font-medium text-gray-700">
                     {label}
                     {name === "blog_content" && (
-                      <span className="ml-2 text-xs text-gray-400 font-normal">
+                      <span className="ml-2 text-xs font-normal text-gray-400">
                         (JSON)
                       </span>
                     )}
                     {(name === "top_content" || name === "bottom_content") && (
-                      <span className="ml-2 text-xs text-gray-400 font-normal">
+                      <span className="ml-2 text-xs font-normal text-gray-400">
                         (HTML)
                       </span>
                     )}
@@ -488,7 +488,7 @@ function ContentPage() {
                       value={forms[activeTab][name]}
                       onChange={handleChange}
                       placeholder={`Enter ${label.toLowerCase()}`}
-                      className="border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="rounded border p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                   ) : (
                     <textarea
@@ -503,7 +503,7 @@ function ContentPage() {
                             ? `<p>Enter HTML content</p>`
                             : `Enter ${label.toLowerCase()}`
                       }
-                      className="border rounded p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y font-mono"
+                      className="resize-y rounded border p-2 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                   )}
                 </div>
@@ -524,7 +524,7 @@ function ContentPage() {
               <button
                 type="submit"
                 disabled={loading || fetching}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm w-fit disabled:opacity-50"
+                className="w-fit rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
               >
                 {loading ? "Saving..." : `Save ${editingLabel} Content`}
               </button>

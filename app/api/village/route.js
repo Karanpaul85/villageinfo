@@ -11,7 +11,8 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const state_slug = searchParams.get("state_slug");
     const district_slug = searchParams.get("district_slug");
-    const block_slug = searchParams.get("block_slug");
+    const block_slug =
+      searchParams.get("block_slug") || searchParams.get("tehsil_slug");
     const village_slug = searchParams.get("village_slug");
     const pageIndex = searchParams.get("pageIndex");
 
